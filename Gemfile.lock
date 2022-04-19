@@ -2,12 +2,19 @@ PATH
   remote: .
   specs:
     decidim_metabase (0.1.0)
+      dotenv
+      faraday
 
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
     diff-lcs (1.5.0)
+    dotenv (2.7.6)
+    faraday (2.2.0)
+      faraday-net_http (~> 2.0)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (2.0.2)
     parallel (1.22.1)
     parser (3.1.2.0)
       ast (~> 2.4.1)
@@ -40,6 +47,7 @@ GEM
     rubocop-ast (1.17.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
+    ruby2_keywords (0.0.5)
     unicode-display_width (2.1.0)
 
 PLATFORMS
