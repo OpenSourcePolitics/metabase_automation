@@ -20,6 +20,9 @@ render_ascii_art
 
 ## Interesting things below...
 
+begin
+
+TOKEN_DB_PATH="token.private"
 Faraday.default_adapter = :net_http
 
 conn = Faraday.new(
@@ -27,17 +30,16 @@ conn = Faraday.new(
   headers: {'Content-Type' => 'application/json'}
 )
 
-response = conn.post('/api/session') do |req|
-  req.body = {
-    username: ENV.fetch("METABASE_USERNAME"),
-    password: ENV.fetch("METABASE_PASSWORD"),
-  }.to_json
-  req.headers = { "Content-Type" => "application/json" }
+api_session = DecidimMetabase::Api::Session.new(conn, {
+  username: ENV.fetch("METABASE_USERNAME"),
+  password: ENV.fetch("METABASE_PASSWORD"),
+})
+
+puts api_session.token
+
+rescue StandardError => e
+  puts "[#{e.class}] - #{e.message} (Exit code: 2)"
+  exit 2
 end
 
-if response.body != ""
-  body = JSON.parse(response.body)
-  File.open("token.private", "w+") { |file| file.write(body["id"]) }
-end
 
-puts response
