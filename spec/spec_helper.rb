@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "decidim_metabase"
+require "faraday"
+require "byebug"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

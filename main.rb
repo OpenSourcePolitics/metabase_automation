@@ -36,6 +36,7 @@ api_session = DecidimMetabase::Api::Session.new(conn, {
 })
 
 puts api_session.token
+puts api_session.session_request_header
 
 rescue StandardError => e
   puts "[#{e.class}] - #{e.message} (Exit code: 2)"

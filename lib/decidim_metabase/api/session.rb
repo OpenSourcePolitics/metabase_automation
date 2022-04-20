@@ -1,7 +1,7 @@
 module DecidimMetabase
   module Api
     class TokenNotFound < DecidimMetabase::Api::ResponseError
-      def initialize(response = nil, msg = "Toke not found in response")
+      def initialize(response = nil, msg = "Token not found in response")
         super(response, msg)
       end
     end
@@ -9,7 +9,8 @@ module DecidimMetabase
     class Session
       attr_reader :token
 
-      def initialize(conn, params_h)
+      def initialize(conn, params_h, token_db_path="token.private")
+        @token_db_path = token_db_path
         @token = get_token(conn, params_h)
       end
 
@@ -17,7 +18,7 @@ module DecidimMetabase
         token = already_existing_token
         return token unless token.nil? || token == ""
 
-        response = conn.post(::Routes.API_SESSION) do |req|
+        response = conn.post(DecidimMetabase::Api::Routes::API_SESSION) do |req|
           req.body = params_h.to_json
         end
 
@@ -32,10 +33,16 @@ module DecidimMetabase
         token
       end
 
+      def session_request_header
+        "X-Metabase-Session: #{@token}"
+      end
+
       private
 
       def already_existing_token
-        File.open(TOKEN_DB_PATH).read
+        return unless File.exists? @token_db_path
+
+        File.open(@token_db_path)&.read.chomp
       end
     end
   end

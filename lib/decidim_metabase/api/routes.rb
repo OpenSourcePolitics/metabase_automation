@@ -1,7 +1,16 @@
 module DecidimMetabase
   module Api
     module Routes
-      API_SESSION = "/api/session"
+      module Collection
+        def get(conn)
+          conn.get(::Routes.API_COLLECTION_INDEX)
+        end
+      end
+
+      ROUTE_PREFIX = "/api"
+      API_SESSION = ROUTE_PREFIX + "/session"
+      API_COLLECTION_INDEX = ROUTE_PREFIX + "/collection"
+
     end
   end
 end
