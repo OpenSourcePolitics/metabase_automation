@@ -49,13 +49,37 @@ begin
   api_collection = DecidimMetabase::Api::Collection.new(http_request)
   collection = api_collection.find_or_create!(configs["collection_name"])
 
+  components = Dir.glob("./cards/decidim_cards/*").select { |path| File.directory?(path) }
 
+  components.each do |path|
+    next unless File.directory? path
+    next unless File.exists? "#{path}/info.yml"
+    next unless File.exists? "#{path}/locales/en.yml"
 
-  # TODO: Créer les cards de decidim-cards dans la collection
+    info = YAML.load_file("#{path}/info.yml")
+    locales = YAML.load_file("#{path}/locales/en.yml")
 
-  puts target_database
-  puts collection
+    request = http_request.post("/api/card", {
+      visualization_settings: {
+        "table.cell_column"=> "id",
+      },
+      collection_id: collection["id"],
+      name: locales["name"],
+      dataset_query: {
+        "type" => "native",
+        "native" => {
+          "query" => info["query"]["sql"].chomp
+        },
+        "database" => target_database["id"] },
+      display: "table", # Or scalar
+    })
+    # {"errors"=>{"display"=>"la valeur doit être une chaîne de caractères non vide."}}
+    body = JSON.parse(request.body)
 
+    puts body
+  end
+
+  puts components
 rescue StandardError => e
   puts "[#{e.class}] - #{e.message} (Exit code: 2)"
   exit 2
