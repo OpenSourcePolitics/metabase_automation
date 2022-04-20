@@ -1,0 +1,8 @@
+[submodule "cards/matomo_cards"]
+	branch = master
+	path = cards/matomo_cards
+	url = https://github.com/OpenSourcePolitics/matomo_cards
+[submodule "cards/decidim_cards"]
+	branch = master
+	path = cards/decidim_cards
+	url = https://github.com/OpenSourcePolitics/decidim_cards
