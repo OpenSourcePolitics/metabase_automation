@@ -6,6 +6,12 @@ module DecidimMetabase
       end
     end
 
+    class TokenInvalid < DecidimMetabase::Api::ResponseError
+      def initialize(response = nil, msg = "Token is not authorized")
+        super(response, msg)
+      end
+    end
+
     class Session
       attr_reader :token
 
@@ -17,6 +23,7 @@ module DecidimMetabase
       end
 
       def refresh_token!
+        puts "Refreshing token"
         File.write("token.private", "")
 
         get_token!

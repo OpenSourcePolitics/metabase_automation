@@ -5,7 +5,7 @@ require "byebug"
 require 'faraday'
 require 'faraday/net_http'
 require 'dotenv/load'
-
+require 'yaml'
 
 def render_ascii_art
   File.readlines("ascii.txt")[0..-2].each do |line|
@@ -22,44 +22,39 @@ render_ascii_art
 
 begin
 
-TOKEN_DB_PATH="token.private"
-Faraday.default_adapter = :net_http
+  TOKEN_DB_PATH = "token.private"
 
-conn = Faraday.new(
-  url: "https://#{ENV.fetch("METABASE_HOST")}/",
-  headers: {'Content-Type' => 'application/json'}
-)
+  # Charger le fichier config.yml
+  configs = YAML.load_file("config.yml")
 
-api_session = DecidimMetabase::Api::Session.new(conn, {
-  username: ENV.fetch("METABASE_USERNAME"),
-  password: ENV.fetch("METABASE_PASSWORD"),
-})
+  # Définir la connexion Faraday
+  Faraday.default_adapter = :net_http
+  conn = Faraday.new(
+    url: "https://#{ENV.fetch("METABASE_HOST")}/",
+    headers: { 'Content-Type' => 'application/json' }
+  )
 
-response = conn.get("/api/database",  { "include_cards" => "true" }, api_session.session_request_header)
+  # Définition de l'Api Session
+  api_session = DecidimMetabase::Api::Session.new(conn, {
+    username: ENV.fetch("METABASE_USERNAME"),
+    password: ENV.fetch("METABASE_PASSWORD"),
+  })
 
-# DB ANCT
-# LEs DBs sont déja crées
-#
-#
-#
-# Créer une nouvelle collection si ça existe pas (config.yml : Collection_name)
-# Créer les cards de decidim-cards dans la collection
-#
-# request = conn.get("/api/database", { "include_cards" => "true" }, api_session.session_request_header)
-#json["data"].last["tables"] where schema = DB name
+  http_request = DecidimMetabase::HttpRequests.new(conn, api_session)
 
-if response.status == 401
-  api_session.refresh_token!
-else
-  body = JSON.parse(response.body)
+  # Récupérer les bases de données
+  api_database = DecidimMetabase::Api::Database.new(http_request)
+  target_database = api_database.find_by(configs["database"]["decidim"]["name"])
 
-  dbs = body["data"].map { |meta_db| { name: meta_db["name"], id: meta_db["id"] } }
-
-  puts dbs
-end
+  api_collection = DecidimMetabase::Api::Collection.new(http_request)
+  collection = api_collection.find_or_create!(configs["collection_name"])
 
 
 
+  # TODO: Créer les cards de decidim-cards dans la collection
+
+  puts target_database
+  puts collection
 
 rescue StandardError => e
   puts "[#{e.class}] - #{e.message} (Exit code: 2)"

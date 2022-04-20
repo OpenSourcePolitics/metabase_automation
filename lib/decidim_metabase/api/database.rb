@@ -1,0 +1,28 @@
+module DecidimMetabase
+  module Api
+    class DatabaseNotFound < DecidimMetabase::Api::ResponseError
+      def initialize(response = nil, msg = "Database is not present")
+        super(response, msg)
+      end
+    end
+
+    class Database
+      def initialize(http_request)
+        @http_request = http_request
+      end
+
+      def databases
+        request = @http_request.get("/api/database",  { "include_cards" => "true" })
+        body = JSON.parse(request.body)
+
+        @databases = body["data"]
+      end
+
+      def find_by(name = "")
+        return if name == "" || name.nil?
+
+        databases&.select { |database| name == database["name"] }.compact&.first
+      end
+    end
+  end
+end
