@@ -1,0 +1,8 @@
+---
+database:
+  decidim:
+    name: <EXISTING METABASE DATABASE>
+  matomo:
+    name: <EXISTING METABASE DATABASE>
+collection_name: <NEW OR EXISTING METABASE COLLECTION>
+language: fr # en

@@ -35,8 +35,31 @@ api_session = DecidimMetabase::Api::Session.new(conn, {
   password: ENV.fetch("METABASE_PASSWORD"),
 })
 
-puts api_session.token
-puts api_session.session_request_header
+response = conn.get("/api/database",  { "include_cards" => "true" }, api_session.session_request_header)
+
+# DB ANCT
+# LEs DBs sont déja crées
+#
+#
+#
+# Créer une nouvelle collection si ça existe pas (config.yml : Collection_name)
+# Créer les cards de decidim-cards dans la collection
+#
+# request = conn.get("/api/database", { "include_cards" => "true" }, api_session.session_request_header)
+#json["data"].last["tables"] where schema = DB name
+
+if response.status == 401
+  api_session.refresh_token!
+else
+  body = JSON.parse(response.body)
+
+  dbs = body["data"].map { |meta_db| { name: meta_db["name"], id: meta_db["id"] } }
+
+  puts dbs
+end
+
+
+
 
 rescue StandardError => e
   puts "[#{e.class}] - #{e.message} (Exit code: 2)"

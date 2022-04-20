@@ -10,16 +10,24 @@ module DecidimMetabase
       attr_reader :token
 
       def initialize(conn, params_h, token_db_path="token.private")
+        @conn = conn
+        @params_h = params_h
         @token_db_path = token_db_path
-        @token = get_token(conn, params_h)
+        @token = get_token!
       end
 
-      def get_token(conn, params_h)
+      def refresh_token!
+        File.write("token.private", "")
+
+        get_token!
+      end
+
+      def get_token!
         token = already_existing_token
         return token unless token.nil? || token == ""
 
-        response = conn.post(DecidimMetabase::Api::Routes::API_SESSION) do |req|
-          req.body = params_h.to_json
+        response = @conn.post(DecidimMetabase::Api::Routes::API_SESSION) do |req|
+          req.body = @params_h.to_json
         end
 
         body = JSON.parse(response.body)
@@ -30,11 +38,12 @@ module DecidimMetabase
 
         File.open("token.private", "a") { |file| file.write(token) }
 
+        @token = token
         token
       end
 
       def session_request_header
-        "X-Metabase-Session: #{@token}"
+        { "X-Metabase-Session" => @token }
       end
 
       private
