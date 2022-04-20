@@ -28,7 +28,7 @@ module DecidimMetabase
         token = body.fetch("id", nil)
         raise DecidimMetabase::Api::TokenNotFound.new(body) if token.nil?
 
-        File.open("token.private", "w+") { |file| file.write(token) }
+        File.open("token.private", "a") { |file| file.write(token) }
 
         token
       end
