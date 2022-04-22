@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require_relative "lib/decidim_metabase"
+require 'securerandom'
 require "byebug"
 require 'faraday'
 require 'faraday/net_http'
@@ -41,7 +42,10 @@ begin
   })
 
   http_request = DecidimMetabase::HttpRequests.new(conn, api_session)
-
+  #
+  card = http_request.get("/api/card/1104")
+  # byebug
+  # exit 0
   # Récupérer les bases de données
   api_database = DecidimMetabase::Api::Database.new(http_request)
   target_database = api_database.find_by(configs["database"]["decidim"]["name"])
@@ -49,7 +53,9 @@ begin
   api_collection = DecidimMetabase::Api::Collection.new(http_request)
   collection = api_collection.find_or_create!(configs["collection_name"])
 
-  components = Dir.glob("./cards/decidim_cards/*").select { |path| File.directory?(path) }
+  components = Dir.glob("./cards/decidim_cards/*").select { |path| File.directory?(path) }.sort
+
+  cards = []
 
   components.each do |path|
     next unless File.directory? path
@@ -59,27 +65,74 @@ begin
     info = YAML.load_file("#{path}/info.yml")
     locales = YAML.load_file("#{path}/locales/en.yml")
 
-    request = http_request.post("/api/card", {
-      visualization_settings: {
-        "table.cell_column"=> "id",
-      },
+    # Fetch card before ?
+    #
+
+    query = info["query"]["sql"].chomp
+
+    if query.match?(/\$HOST/)
+      query = query.gsub!("$HOST", "'#{configs["host"]}'")
+    end
+
+    if query.include?("{{#ORGANIZATION}}")
+      organization = cards.select { |card| card if card["name"] == "Organization" }.first
+      query = query.gsub!("{{#ORGANIZATION}}", "{{##{organization["id"].to_s}}}")
+    end
+
+    if query.include?("{{#components}}")
+      components_card = cards.select { |card| card if card["name"] == "Components" }.first
+      query = query.gsub!("{{#components}}", "{{##{components_card["id"].to_s}}}")
+    end
+
+    payload = {
       collection_id: collection["id"],
       name: locales["name"],
+      display: "table",
+      dataset: true,
       dataset_query: {
         "type" => "native",
         "native" => {
-          "query" => info["query"]["sql"].chomp
+          "query" => query,
+          "filter" => {}
         },
-        "database" => target_database["id"] },
-      display: "table", # Or scalar
-    })
-    # {"errors"=>{"display"=>"la valeur doit être une chaîne de caractères non vide."}}
+        "database" => target_database["id"]
+      },
+      visualization_settings: {
+        "table.cell_column"=> "id",
+      }
+    }
+
+    if !organization.nil?
+      uuid = SecureRandom.uuid.to_s
+      payload[:dataset_query]["native"]["template-tags"] =
+        { "##{organization["id"].to_s}" => {
+          "id" => uuid,
+          "name"=>"##{organization["id"].to_s}",
+          "display-name"=>"##{organization["id"].to_s}",
+          "type"=>"card",
+          "card-id"=>organization["id"]
+        }
+      }
+    end
+    if !components_card.nil?
+      uuid = SecureRandom.uuid.to_s
+      payload[:dataset_query]["native"]["template-tags"] =
+        { "##{components_card["id"].to_s}" => {
+          "id" => uuid,
+          "name"=>"##{components_card["id"].to_s}",
+          "display-name"=>"##{components_card["id"].to_s}",
+          "type"=>"card",
+          "card-id"=>components_card["id"]
+        }
+      }
+    end
+
+    request = http_request.post("/api/card", payload)
+
     body = JSON.parse(request.body)
 
-    puts body
+    cards << body
   end
-
-  puts components
 rescue StandardError => e
   puts "[#{e.class}] - #{e.message} (Exit code: 2)"
   exit 2
