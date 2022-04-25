@@ -6,7 +6,7 @@ RSpec.describe DecidimMetabase::Api::Database do
   let(:conn) { Faraday.new { |b| b.adapter(:test, stubs) } }
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:token_db_path) { "./spec/fixtures/token.private" }
-  let(:http_request) { DecidimMetabase::HttpRequests.new(conn, api_session) }
+  let(:http_request) { DecidimMetabase::HttpRequests.new(api_session) }
   let(:api_session) { DecidimMetabase::Api::Session.new(conn, params_h, token_db_path) }
   let(:database_name) { "Rspec database" }
 

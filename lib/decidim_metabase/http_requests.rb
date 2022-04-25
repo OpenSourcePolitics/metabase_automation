@@ -1,8 +1,8 @@
 module DecidimMetabase
   class HttpRequests
-    def initialize(conn, api_session)
-      @conn = conn
+    def initialize(api_session)
       @api_session = api_session
+      @conn = api_session.conn
     end
 
     def get(url, params = nil)

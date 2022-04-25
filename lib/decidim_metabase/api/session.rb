@@ -14,6 +14,7 @@ module DecidimMetabase
 
     class Session
       attr_reader :token
+      attr_accessor :conn
 
       def initialize(conn, params_h, token_db_path="token.private")
         @conn = conn

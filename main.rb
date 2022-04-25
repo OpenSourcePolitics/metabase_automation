@@ -22,37 +22,36 @@ render_ascii_art
 ## Interesting things below...
 
 begin
-
   TOKEN_DB_PATH = "token.private"
 
-  # Charger le fichier config.yml
+  # Load file 'config.yml'
   configs = YAML.load_file("config.yml")
 
-  # Définir la connexion Faraday
+  # Define new Faraday connexion
   Faraday.default_adapter = :net_http
   conn = Faraday.new(
     url: "https://#{ENV.fetch("METABASE_HOST")}/",
     headers: { 'Content-Type' => 'application/json' }
   )
 
-  # Définition de l'Api Session
+  # Define API Session
   api_session = DecidimMetabase::Api::Session.new(conn, {
     username: ENV.fetch("METABASE_USERNAME"),
     password: ENV.fetch("METABASE_PASSWORD"),
   })
 
-  # Builder de requetes
-  http_request = DecidimMetabase::HttpRequests.new(conn, api_session)
+  # HTTP Request builder
+  http_request = DecidimMetabase::HttpRequests.new(api_session)
 
-  # Récupérer les bases de données
+  # Metabase database API
   api_database = DecidimMetabase::Api::Database.new(http_request)
 
   decidim_db = api_database.find_by(configs["database"]["decidim"]["name"])
 
   api_collection = DecidimMetabase::Api::Collection.new(http_request)
   collection = api_collection.find_or_create!(configs["collection_name"])
-  # Collection should be nil
 
+  # TODO: Depends_on in yaml
   components = Dir.glob("./cards/decidim_cards/*").select { |path| File.directory?(path) }.sort
 
   cards = []
