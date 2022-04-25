@@ -46,6 +46,7 @@ begin
 
   # Récupérer les bases de données
   api_database = DecidimMetabase::Api::Database.new(http_request)
+
   decidim_db = api_database.find_by(configs["database"]["decidim"]["name"])
 
   api_collection = DecidimMetabase::Api::Collection.new(http_request)

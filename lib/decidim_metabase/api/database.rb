@@ -8,6 +8,7 @@ module DecidimMetabase
 
     class Database
       def initialize(http_request)
+        raise ::ArgumentError.new("Please use DecidimMetabase::HttpRequests while initializing database.") unless http_request.is_a?(DecidimMetabase::HttpRequests)
         @http_request = http_request
       end
 
