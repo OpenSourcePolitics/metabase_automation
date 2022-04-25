@@ -24,7 +24,7 @@ module DecidimMetabase
 
       def refresh_token!
         puts "Refreshing token"
-        File.write("token.private", "")
+        File.write(@token_db_path, "")
 
         get_token!
       end
@@ -43,7 +43,7 @@ module DecidimMetabase
         token = body.fetch("id", nil)
         raise DecidimMetabase::Api::TokenNotFound.new(body) if token.nil?
 
-        File.open("token.private", "a") { |file| file.write(token) }
+        File.open(@token_db_path, "w+") { |file| file.write(token) }
 
         @token = token
         token

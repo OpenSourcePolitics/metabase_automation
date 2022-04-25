@@ -5,7 +5,7 @@ RSpec.describe DecidimMetabase::Api::Session do
 
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:conn) { Faraday.new { |b| b.adapter(:test, stubs) } }
-  let(:token_db_path) { nil }
+  let(:token_db_path) { "./spec/fixtures/token.private" }
   let(:http_response) { { "id" => new_token } }
   before do
     stubs.post('/api/session') do |_env|
@@ -20,6 +20,7 @@ RSpec.describe DecidimMetabase::Api::Session do
 
   after do
     Faraday.default_connection = nil
+    File.write(token_db_path, token)
   end
 
   let(:token) { "fake-token-123456" }
@@ -28,6 +29,7 @@ RSpec.describe DecidimMetabase::Api::Session do
 
   it "returns a new token" do
     expect(subject.token).to eq(new_token)
+    expect(File.read(token_db_path)).to eq(new_token)
   end
 
   context "when HTTP response is empty" do
@@ -60,6 +62,7 @@ RSpec.describe DecidimMetabase::Api::Session do
     before do
       allow(File).to receive(:exists?).with(token_db_path).and_return(true)
     end
+
     it "reads token from DB file" do
       expect(subject.token).to eq(token)
     end
