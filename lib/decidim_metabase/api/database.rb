@@ -21,7 +21,10 @@ module DecidimMetabase
       def find_by(name = "")
         return if name == "" || name.nil?
 
-        databases&.select { |database| name == database["name"] }.compact&.first
+        db = databases&.select { |database| name == database["name"] }.compact.first
+        raise DatabaseNotFound if db.nil? || db.empty?
+
+        db
       end
     end
   end

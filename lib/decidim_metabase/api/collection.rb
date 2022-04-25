@@ -8,6 +8,7 @@ module DecidimMetabase
 
     class Collection
       def initialize(http_request)
+        raise ::ArgumentError.new("Please use DecidimMetabase::HttpRequests while initializing Collection.") unless http_request.is_a?(DecidimMetabase::HttpRequests)
         @http_request = http_request
       end
 
@@ -26,20 +27,25 @@ module DecidimMetabase
           namespace: nil,
           authority_level: nil
         })
-        body = JSON.parse(request.body)
 
-        body["data"]
+        JSON.parse(request.body)
       end
 
+      # Find a unique collection from available collections
       def find_by(name = "")
         return if name == "" || name.nil?
 
         collections&.select { |coll| name == coll["name"] }&.first
       end
 
+      # Find existing collection or create it if not exists
       def find_or_create!(name)
         found = find_by name
-        return found unless found.nil? || found.empty?
+
+        unless found.nil? || found.empty?
+          puts "Collection '#{name}' is already existing"
+          return found
+        end
 
         puts "Creating collection '#{name}'..."
         create_collection!(name)

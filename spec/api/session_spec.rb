@@ -67,7 +67,7 @@ RSpec.describe DecidimMetabase::Api::Session do
 
   describe "session_request_header" do
     it "interpolates token with session header" do
-      expect(subject.session_request_header).to eq("X-Metabase-Session: #{new_token}")
+      expect(subject.session_request_header).to eq("X-Metabase-Session" => new_token)
     end
   end
 end

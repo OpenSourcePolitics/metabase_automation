@@ -41,17 +41,16 @@ begin
     password: ENV.fetch("METABASE_PASSWORD"),
   })
 
+  # Builder de requetes
   http_request = DecidimMetabase::HttpRequests.new(conn, api_session)
-  #
-  card = http_request.get("/api/card/1104")
-  # byebug
-  # exit 0
+
   # Récupérer les bases de données
   api_database = DecidimMetabase::Api::Database.new(http_request)
-  target_database = api_database.find_by(configs["database"]["decidim"]["name"])
+  decidim_db = api_database.find_by(configs["database"]["decidim"]["name"])
 
   api_collection = DecidimMetabase::Api::Collection.new(http_request)
   collection = api_collection.find_or_create!(configs["collection_name"])
+  # Collection should be nil
 
   components = Dir.glob("./cards/decidim_cards/*").select { |path| File.directory?(path) }.sort
 
@@ -65,11 +64,7 @@ begin
     info = YAML.load_file("#{path}/info.yml")
     locales = YAML.load_file("#{path}/locales/en.yml")
 
-    # Fetch card before ?
-    #
-
     query = info["query"]["sql"].chomp
-
     if query.match?(/\$HOST/)
       query = query.gsub!("$HOST", "'#{configs["host"]}'")
     end
@@ -81,6 +76,7 @@ begin
 
     if query.include?("{{#components}}")
       components_card = cards.select { |card| card if card["name"] == "Components" }.first
+      # TODO: Ensure components cards, may be nil
       query = query.gsub!("{{#components}}", "{{##{components_card["id"].to_s}}}")
     end
 
@@ -95,7 +91,7 @@ begin
           "query" => query,
           "filter" => {}
         },
-        "database" => target_database["id"]
+        "database" => decidim_db["id"]
       },
       visualization_settings: {
         "table.cell_column"=> "id",
