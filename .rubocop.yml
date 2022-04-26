@@ -10,4 +10,25 @@ Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
 Layout/LineLength:
+  Enabled: true
+  Exclude:
+    - spec/api/collection_spec.rb
   Max: 120
+
+Metrics/AbcSize:
+  Enabled: true
+  Exclude:
+    - lib/decidim_metabase/api/session.rb
+
+
+Metrics/ModuleLength:
+  Enabled: true
+  Exclude:
+    - spec/api/collection_spec.rb
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - spec/api/collection_spec.rb
+    - spec/api/database_spec.rb
+    - spec/api/session_spec.rb

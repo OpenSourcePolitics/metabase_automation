@@ -9,10 +9,10 @@ Gem::Specification.new do |spec|
   spec.email         = ["26109239+Quentinchampenois@users.noreply.github.com"]
 
   spec.summary       = "Automatize the add of Decidim applications to your Metabase"
-  spec.description   = "Decidim Metabase allows to create easily Metabase collections and cards from your Decidim platform."
+  spec.description   = "Allows to create easily Metabase collections and cards from your Decidim platform."
   spec.homepage      = "https://github.com/OpenSourcePolitics/decidim_metabase"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.4.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.7.1")
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/OpenSourcePolitics/decidim_metabase"

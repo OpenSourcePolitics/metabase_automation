@@ -2,6 +2,7 @@
 
 module DecidimMetabase
   module Api
+    # Default response error
     class ResponseError < StandardError
       def initialize(response = nil, msg = "Error occured in Metabase response")
         @response = response

@@ -2,12 +2,14 @@
 
 module DecidimMetabase
   module Api
+    # CollectionNotFound raise when collection was not found in Metabase
     class CollectionNotFound < DecidimMetabase::Api::ResponseError
       def initialize(response = nil, msg = "Collection is not present")
         super(response, msg)
       end
     end
 
+    # Defines Metabase Collection
     class Collection
       def initialize(http_request)
         unless http_request.is_a?(DecidimMetabase::HttpRequests)

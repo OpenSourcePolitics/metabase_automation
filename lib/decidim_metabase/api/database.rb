@@ -2,12 +2,14 @@
 
 module DecidimMetabase
   module Api
+    # DatabaseNotFound raises when database was not found in database
     class DatabaseNotFound < DecidimMetabase::Api::ResponseError
       def initialize(response = nil, msg = "Database is not present")
         super(response, msg)
       end
     end
 
+    # Database defines a Metabase Database
     class Database
       def initialize(http_request)
         unless http_request.is_a?(DecidimMetabase::HttpRequests)
@@ -27,7 +29,10 @@ module DecidimMetabase
       def find_by(name = "")
         return if name == "" || name.nil?
 
+        # rubocop:disable Lint/SafeNavigationChain
         db = databases&.select { |database| name == database["name"] }.compact.first
+        # rubocop:enable Lint/SafeNavigationChain
+
         raise DatabaseNotFound if db.nil? || db.empty?
 
         db

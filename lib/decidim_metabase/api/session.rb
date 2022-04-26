@@ -2,18 +2,21 @@
 
 module DecidimMetabase
   module Api
+    # TokenNotFound raises when token is not found from Metabase
     class TokenNotFound < DecidimMetabase::Api::ResponseError
       def initialize(response = nil, msg = "Token not found in response")
         super(response, msg)
       end
     end
 
+    # TokenInvalid raises when Metabase doesn't accept token
     class TokenInvalid < DecidimMetabase::Api::ResponseError
       def initialize(response = nil, msg = "Token is not authorized")
         super(response, msg)
       end
     end
 
+    # Session defines a Metabase Session and refresh token if needed
     class Session
       attr_reader :token
       attr_accessor :conn
@@ -22,17 +25,17 @@ module DecidimMetabase
         @conn = conn
         @params_h = params_h
         @token_db_path = token_db_path
-        @token = get_token!
+        @token = fetch_token!
       end
 
       def refresh_token!
         puts "Refreshing token"
         File.write(@token_db_path, "")
-
-        get_token!
+        fetch_token!
       end
 
-      def get_token!
+      # rubocop:disable Metrics/MethodLength
+      def fetch_token!
         token = already_existing_token
         return token unless token.nil? || token == ""
 
@@ -52,6 +55,7 @@ module DecidimMetabase
         @token = token
         token
       end
+      # rubocop:enable Metrics/MethodLength
 
       def session_request_header
         { "X-Metabase-Session" => @token }
@@ -62,7 +66,8 @@ module DecidimMetabase
       def already_existing_token
         return unless File.exist? @token_db_path
 
-        File.open(@token_db_path)&.read.chomp
+        content = File.open(@token_db_path)&.read
+        content.chomp
       end
     end
   end

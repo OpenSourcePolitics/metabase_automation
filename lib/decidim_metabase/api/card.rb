@@ -2,8 +2,11 @@
 
 module DecidimMetabase
   module Api
+    # rubocop:disable Metrics/ClassLength
+    # Card mixes decidim_cards and Metabase card
+    # It allows to take in account cards inter-dependencies
     class Card
-      attr_accessor :to_h, :path, :query, :id
+      attr_accessor :to_h, :path, :id
 
       def initialize(path)
         @path = path
@@ -46,14 +49,14 @@ module DecidimMetabase
       end
 
       def dependencies
-        @dependencies ||= if has_no_dependencies?
+        @dependencies ||= if no_dependencies?
                             []
                           else
                             yaml_info.dig("query", "info", "meta", "depends_on")
                           end
       end
 
-      def has_no_dependencies?
+      def no_dependencies?
         yaml_info.dig("query", "info", "meta", "depends_on").nil?
       end
 
@@ -93,6 +96,7 @@ module DecidimMetabase
         }
       end
 
+      # rubocop:disable Metrics/MethodLength
       def base_payload(collection, decidim_db_id)
         {
           collection_id: collection["id"],
@@ -112,6 +116,7 @@ module DecidimMetabase
           }
         }
       end
+      # rubocop:enable Metrics/MethodLength
 
       private
 
@@ -183,5 +188,6 @@ module DecidimMetabase
         }
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

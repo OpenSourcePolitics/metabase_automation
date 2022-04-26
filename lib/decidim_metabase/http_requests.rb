@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DecidimMetabase
+  # HttpRequests contains HTTP queries to work with Metabase
   class HttpRequests
     def initialize(api_session)
       @api_session = api_session
