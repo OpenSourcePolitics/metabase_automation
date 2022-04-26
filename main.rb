@@ -2,7 +2,6 @@
 
 require_relative "lib/decidim_metabase"
 require 'securerandom'
-require "byebug"
 require 'faraday'
 require 'faraday/net_http'
 require 'dotenv/load'
@@ -51,83 +50,45 @@ begin
   api_collection = DecidimMetabase::Api::Collection.new(http_request)
   collection = api_collection.find_or_create!(configs["collection_name"])
 
-  # TODO: Depends_on in yaml
-  components = Dir.glob("./cards/decidim_cards/*").select { |path| File.directory?(path) }.sort
+  decidim_cards = Dir.glob("./cards/decidim_cards/*").map do |path|
+    DecidimMetabase::Api::Card.new(path)
+  end
 
-  cards = []
+  CARDS = decidim_cards.reject(&:invalid?)
 
-  components.each do |path|
-    next unless File.directory? path
-    next unless File.exists? "#{path}/info.yml"
-    next unless File.exists? "#{path}/locales/en.yml"
+  need_dependencies = CARDS.map.with_index do |card, index|
+    next if card.dependencies.empty?
 
-    info = YAML.load_file("#{path}/info.yml")
-    locales = YAML.load_file("#{path}/locales/en.yml")
-
-    query = info["query"]["sql"].chomp
-    if query.match?(/\$HOST/)
-      query = query.gsub!("$HOST", "'#{configs["host"]}'")
-    end
-
-    if query.include?("{{#ORGANIZATION}}")
-      organization = cards.select { |card| card if card["name"] == "Organization" }.first
-      query = query.gsub!("{{#ORGANIZATION}}", "{{##{organization["id"].to_s}}}")
-    end
-
-    if query.include?("{{#components}}")
-      components_card = cards.select { |card| card if card["name"] == "Components" }.first
-      # TODO: Ensure components cards, may be nil
-      query = query.gsub!("{{#components}}", "{{##{components_card["id"].to_s}}}")
-    end
-
-    payload = {
-      collection_id: collection["id"],
-      name: locales["name"],
-      display: "table",
-      dataset: true,
-      dataset_query: {
-        "type" => "native",
-        "native" => {
-          "query" => query,
-          "filter" => {}
-        },
-        "database" => decidim_db["id"]
-      },
-      visualization_settings: {
-        "table.cell_column"=> "id",
-      }
+    {
+      name: card.name,
+      item: card.dependencies,
+      index: index
     }
+  end.compact
 
-    if !organization.nil?
-      uuid = SecureRandom.uuid.to_s
-      payload[:dataset_query]["native"]["template-tags"] =
-        { "##{organization["id"].to_s}" => {
-          "id" => uuid,
-          "name"=>"##{organization["id"].to_s}",
-          "display-name"=>"##{organization["id"].to_s}",
-          "type"=>"card",
-          "card-id"=>organization["id"]
-        }
-      }
-    end
-    if !components_card.nil?
-      uuid = SecureRandom.uuid.to_s
-      payload[:dataset_query]["native"]["template-tags"] =
-        { "##{components_card["id"].to_s}" => {
-          "id" => uuid,
-          "name"=>"##{components_card["id"].to_s}",
-          "display-name"=>"##{components_card["id"].to_s}",
-          "type"=>"card",
-          "card-id"=>components_card["id"]
-        }
-      }
-    end
 
-    request = http_request.post("/api/card", payload)
+  need_dependencies.each do |deps|
+    deps[:item].each do |item|
+      item_index = CARDS.index { |card| card.name == item }
+      deps_index = CARDS.index { |card| card.name == deps[:name] }
+
+      if item_index > deps_index
+        CARDS[item_index], CARDS[deps_index] = CARDS[deps_index], CARDS[item_index]
+      end
+    end
+  end
+
+  CARDS.each_with_index do |current_card, index|
+    current_card.interpreter!(configs, CARDS)
+
+    request = http_request.post(
+      "/api/card",
+      current_card.payload(collection, decidim_db['id'], CARDS)
+    )
 
     body = JSON.parse(request.body)
 
-    cards << body
+    CARDS[index].update_id!(body["id"])
   end
 rescue StandardError => e
   puts "[#{e.class}] - #{e.message} (Exit code: 2)"
