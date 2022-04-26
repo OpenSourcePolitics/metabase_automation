@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DecidimMetabase
   module Api
     class DatabaseNotFound < DecidimMetabase::Api::ResponseError
@@ -8,12 +10,15 @@ module DecidimMetabase
 
     class Database
       def initialize(http_request)
-        raise ::ArgumentError.new("Please use DecidimMetabase::HttpRequests while initializing database.") unless http_request.is_a?(DecidimMetabase::HttpRequests)
+        unless http_request.is_a?(DecidimMetabase::HttpRequests)
+          raise ::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing database."
+        end
+
         @http_request = http_request
       end
 
       def databases
-        request = @http_request.get("/api/database",  { "include_cards" => "true" })
+        request = @http_request.get("/api/database", { "include_cards" => "true" })
         body = JSON.parse(request.body)
 
         @databases = body["data"]

@@ -8,9 +8,9 @@ RSpec.describe DecidimMetabase::Api::Session do
   let(:token_db_path) { "./spec/fixtures/token.private" }
   let(:http_response) { { "id" => new_token } }
   before do
-    stubs.post('/api/session') do |_env|
+    stubs.post("/api/session") do |_env|
       [
-        200, {"Content-Type" => "application/json"}, http_response.to_json
+        200, { "Content-Type" => "application/json" }, http_response.to_json
       ]
     end
 

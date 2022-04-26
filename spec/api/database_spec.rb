@@ -16,7 +16,7 @@ RSpec.describe DecidimMetabase::Api::Database do
     {
       "data" => [{
         "description" => nil,
-        "features" => ["full-join", "basic-aggregations", "standard-deviation-aggregations"],
+        "features" => %w[full-join basic-aggregations standard-deviation-aggregations],
         "name" => database_name,
         "settings" => nil,
         "native_permissions" => "write",
@@ -43,12 +43,12 @@ RSpec.describe DecidimMetabase::Api::Database do
   let(:params_h) { { username: "example", password: "password" } }
 
   before do
-    stubs.post('/api/session') do |_env|
+    stubs.post("/api/session") do |_env|
       [
         200, { "Content-Type" => "application/json" }, session_response.to_json
       ]
     end
-    stubs.get('/api/database') do |_env|
+    stubs.get("/api/database") do |_env|
       [
         200, { "Content-Type" => "application/json" }, database_response.to_json
       ]
@@ -67,7 +67,9 @@ RSpec.describe DecidimMetabase::Api::Database do
     let(:http_request) { "Not a DecidimMetabase::HttpRequests" }
 
     it "doesn't initializes" do
-      expect { subject }.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing database.")
+      expect do
+        subject
+      end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing database.")
     end
   end
 

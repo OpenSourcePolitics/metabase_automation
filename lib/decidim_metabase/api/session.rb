@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DecidimMetabase
   module Api
     class TokenNotFound < DecidimMetabase::Api::ResponseError
@@ -16,7 +18,7 @@ module DecidimMetabase
       attr_reader :token
       attr_accessor :conn
 
-      def initialize(conn, params_h, token_db_path="token.private")
+      def initialize(conn, params_h, token_db_path = "token.private")
         @conn = conn
         @params_h = params_h
         @token_db_path = token_db_path
@@ -40,9 +42,10 @@ module DecidimMetabase
 
         body = JSON.parse(response.body)
 
-        raise DecidimMetabase::Api::ResponseError.new(body) if body.nil? || body.is_a?(String)
+        raise DecidimMetabase::Api::ResponseError, body if body.nil? || body.is_a?(String)
+
         token = body.fetch("id", nil)
-        raise DecidimMetabase::Api::TokenNotFound.new(body) if token.nil?
+        raise DecidimMetabase::Api::TokenNotFound, body if token.nil?
 
         File.open(@token_db_path, "w+") { |file| file.write(token) }
 
@@ -57,7 +60,7 @@ module DecidimMetabase
       private
 
       def already_existing_token
-        return unless File.exists? @token_db_path
+        return unless File.exist? @token_db_path
 
         File.open(@token_db_path)&.read.chomp
       end

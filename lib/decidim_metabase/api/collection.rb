@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DecidimMetabase
   module Api
     class CollectionNotFound < DecidimMetabase::Api::ResponseError
@@ -8,7 +10,10 @@ module DecidimMetabase
 
     class Collection
       def initialize(http_request)
-        raise ::ArgumentError.new("Please use DecidimMetabase::HttpRequests while initializing Collection.") unless http_request.is_a?(DecidimMetabase::HttpRequests)
+        unless http_request.is_a?(DecidimMetabase::HttpRequests)
+          raise ::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing Collection."
+        end
+
         @http_request = http_request
       end
 
@@ -20,13 +25,13 @@ module DecidimMetabase
       end
 
       def create_collection!(name)
-        request = @http_request.post("/api/collection",  {
-          name: name,
-          color: "#509AA3",
-          parent_id: nil,
-          namespace: nil,
-          authority_level: nil
-        })
+        request = @http_request.post("/api/collection", {
+                                       name: name,
+                                       color: "#509AA3",
+                                       parent_id: nil,
+                                       namespace: nil,
+                                       authority_level: nil
+                                     })
 
         JSON.parse(request.body)
       end

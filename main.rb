@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require_relative "lib/decidim_metabase"
-require 'securerandom'
-require 'faraday'
-require 'faraday/net_http'
-require 'dotenv/load'
-require 'yaml'
+require "securerandom"
+require "faraday"
+require "faraday/net_http"
+require "dotenv/load"
+require "yaml"
 
 def render_ascii_art
   File.readlines("ascii.txt")[0..-2].each do |line|
@@ -30,14 +31,14 @@ begin
   Faraday.default_adapter = :net_http
   conn = Faraday.new(
     url: "https://#{ENV.fetch("METABASE_HOST")}/",
-    headers: { 'Content-Type' => 'application/json' }
+    headers: { "Content-Type" => "application/json" }
   )
 
   # Define API Session
   api_session = DecidimMetabase::Api::Session.new(conn, {
-    username: ENV.fetch("METABASE_USERNAME"),
-    password: ENV.fetch("METABASE_PASSWORD"),
-  })
+                                                    username: ENV.fetch("METABASE_USERNAME"),
+                                                    password: ENV.fetch("METABASE_PASSWORD")
+                                                  })
 
   # HTTP Request builder
   http_request = DecidimMetabase::HttpRequests.new(api_session)
@@ -66,15 +67,12 @@ begin
     }
   end.compact
 
-
   need_dependencies.each do |deps|
     deps[:item].each do |item|
       item_index = CARDS.index { |card| card.name == item }
       deps_index = CARDS.index { |card| card.name == deps[:name] }
 
-      if item_index > deps_index
-        CARDS[item_index], CARDS[deps_index] = CARDS[deps_index], CARDS[item_index]
-      end
+      CARDS[item_index], CARDS[deps_index] = CARDS[deps_index], CARDS[item_index] if item_index > deps_index
     end
   end
 
@@ -83,7 +81,7 @@ begin
 
     request = http_request.post(
       "/api/card",
-      current_card.payload(collection, decidim_db['id'], CARDS)
+      current_card.payload(collection, decidim_db["id"], CARDS)
     )
 
     body = JSON.parse(request.body)
@@ -94,5 +92,3 @@ rescue StandardError => e
   puts "[#{e.class}] - #{e.message} (Exit code: 2)"
   exit 2
 end
-
-

@@ -12,5 +12,4 @@ RSpec.describe DecidimMetabase::Api::Routes do
   it "has collection index route" do
     expect(subject::API_COLLECTION_INDEX).to eq "/api/collection"
   end
-
 end

@@ -17,7 +17,8 @@ RSpec.describe DecidimMetabase::Api::Collection do
   end
 
   let(:collection_rspec) do
-    { "authority_level" => nil, "name" => "Rspec collection", "id" => "root", "parent_id" => nil, "effective_location" => nil, "effective_ancestors" => [], "can_write" => true }
+    { "authority_level" => nil, "name" => "Rspec collection", "id" => "root", "parent_id" => nil,
+      "effective_location" => nil, "effective_ancestors" => [], "can_write" => true }
   end
   let(:collections_response) do
     [
@@ -30,17 +31,17 @@ RSpec.describe DecidimMetabase::Api::Collection do
   let(:params_h) { { username: "example", password: "password" } }
 
   before do
-    stubs.post('/api/session') do |_env|
+    stubs.post("/api/session") do |_env|
       [
         200, { "Content-Type" => "application/json" }, session_response.to_json
       ]
     end
-    stubs.post('/api/collection') do |_env|
+    stubs.post("/api/collection") do |_env|
       [
         200, { "Content-Type" => "application/json" }, collection_response.to_json
       ]
     end
-    stubs.get('/api/collection') do |_env|
+    stubs.get("/api/collection") do |_env|
       [
         200, { "Content-Type" => "application/json" }, collections_response.to_json
       ]
@@ -59,7 +60,9 @@ RSpec.describe DecidimMetabase::Api::Collection do
     let(:http_request) { "Not a DecidimMetabase::HttpRequests" }
 
     it "doesn't initializes" do
-      expect { subject }.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing Collection.")
+      expect do
+        subject
+      end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing Collection.")
     end
   end
 

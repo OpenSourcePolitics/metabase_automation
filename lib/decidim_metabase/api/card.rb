@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DecidimMetabase
   module Api
     class Card
@@ -10,8 +12,8 @@ module DecidimMetabase
 
       def setup!
         return unless File.directory?(path)
-        return unless File.exists? info_path
-        return unless File.exists? locales_path
+        return unless File.exist? info_path
+        return unless File.exist? locales_path
 
         serialize_to_h
       end
@@ -81,12 +83,12 @@ module DecidimMetabase
         uuid = SecureRandom.uuid.to_s
 
         payload[:dataset_query]["native"]["template-tags"] = {
-          "##{id.to_s}" => {
+          "##{id}" => {
             "id" => uuid,
-            "name"=>"##{id.to_s}",
-            "display-name"=>"##{id.to_s}",
-            "type"=>"card",
-            "card-id"=>id
+            "name" => "##{id}",
+            "display-name" => "##{id}",
+            "type" => "card",
+            "card-id" => id
           }
         }
       end
@@ -94,19 +96,19 @@ module DecidimMetabase
       def base_payload(collection, decidim_db_id)
         {
           collection_id: collection["id"],
-          name: self.yaml_locales["name"],
+          name: yaml_locales["name"],
           display: "table",
           dataset: true,
           dataset_query: {
             "type" => "native",
             "native" => {
-              "query" => self.query,
+              "query" => query,
               "filter" => {}
             },
             "database" => decidim_db_id
           },
           visualization_settings: {
-            "table.cell_column"=> "id",
+            "table.cell_column" => "id"
           }
         }
       end
@@ -118,17 +120,17 @@ module DecidimMetabase
       end
 
       def interpret_host?
-        self.query.match?(/\$HOST/)
+        query.match?(/\$HOST/)
       end
 
       def interpret_host(host)
         return unless interpret_host?
 
-        self.query.gsub!("$HOST", "'#{host}'")
+        query.gsub!("$HOST", "'#{host}'")
       end
 
       def interpret_organization?
-        self.query.include?("{{#ORGANIZATION}}")
+        query.include?("{{#ORGANIZATION}}")
       end
 
       def interpret_organization(cards)
@@ -136,16 +138,16 @@ module DecidimMetabase
 
         target = find_card_by("organizations", cards)
         unless target.respond_to?(:id) && target&.id.is_a?(Integer)
-          puts "ID not found for '#{self.name}'"
+          puts "ID not found for '#{name}'"
           return false
         end
 
-        self.query.gsub!("{{#ORGANIZATION}}", "{{##{target&.id.to_s}}}")
+        query.gsub!("{{#ORGANIZATION}}", "{{##{target&.id}}}")
         true
       end
 
       def interpret_components?
-        self.query.include?("{{#components}}")
+        query.include?("{{#components}}")
       end
 
       def interpret_components(cards)
@@ -153,11 +155,11 @@ module DecidimMetabase
 
         target = find_card_by("components", cards)
         unless target.respond_to?(:id) && target&.id.is_a?(Integer)
-          puts "ID not found for '#{self.name}'"
+          puts "ID not found for '#{name}'"
           return false
         end
 
-        self.query.gsub!("{{#components}}", "{{##{target&.id.to_s}}}")
+        query.gsub!("{{#components}}", "{{##{target&.id}}}")
 
         true
       end
@@ -175,7 +177,7 @@ module DecidimMetabase
           name => {
             "path" => @path,
             "yaml_info" => yaml_info,
-            "yaml_locales" => yaml_locales,
+            "yaml_locales" => yaml_locales
           },
           "depends_on" => dependencies
         }
