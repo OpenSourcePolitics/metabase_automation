@@ -1,38 +1,51 @@
 # DecidimMetabase
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/decidim_metabase`. To experiment with that code, run `bin/console` for an interactive prompt.
+Decidim Metabase is a program written in Ruby and helps to create Metabase collections. The aim is to create easily metacards based on [Decidim](https://github.com/decidim/decidim) needs.
 
-TODO: Delete this and the text above, and describe your gem
+Based on the Metabase API, it helps creating Metabase resources based on YAML config files present in `./cards/decidim_cards` and `config.yml`
 
 ## Installation
 
-Add this line to your application's Gemfile:
+This program is not a dedicated gem, you must run it using the `main.rb` file. However we'll probably enhance tests and library and then share it.
 
-```ruby
-gem 'decidim_metabase'
+First, install dependencies: 
+```bash
+bundle install
 ```
 
-And then execute:
+Ensure file `main.rb` has the execution rights, if not, add it : 
+```bash
+chmod +x main.rb
+```
 
-    $ bundle install
+Pull the defined submodules
 
-Or install it yourself as:
-
-    $ gem install decidim_metabase
+Move `config.yml.example` to `config.yml` and replace placeholders by your configuration.
 
 ## Usage
 
-TODO: Write usage instructions here
+You can easily execute the program with one of these commands : 
+```bash
+make
+# OR 
+make run
+# OR
+bundle exec main.rb
+# OR
+ruby main.rb
+# OR 
+./main.rb
+```
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+For now Decidim Metabase simplify operations for our Data team. Please note that the code is not efficient and potential fails are present. 
+At the moment, it shouldn't causes specific issues on your Metabase server.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/decidim_metabase. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/decidim_metabase/blob/main/CODE_OF_CONDUCT.md).
+Contributions are welcome, at the moment it is still in development.
 
 ## License
 

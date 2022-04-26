@@ -1,3 +1,6 @@
+run:
+	bundle exec main.rb
+
 submodule:
 	@read -p "Enter name of the data source(ex: matomo, decidim,...): " SOURCE_NAME; \
  	read -p "Enter SSH address of the git repository: " GIT_REPO; \
