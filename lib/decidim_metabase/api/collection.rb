@@ -35,7 +35,9 @@ module DecidimMetabase
                                        authority_level: nil
                                      })
 
-        JSON.parse(request.body)
+        json = JSON.parse(request.body)
+
+        puts "Collection ID/#{json["id"]} successfully created".colorize(:green)
       end
 
       # Find a unique collection from available collections
@@ -50,11 +52,11 @@ module DecidimMetabase
         found = find_by name
 
         unless found.nil? || found.empty?
-          puts "Collection '#{name}' is already existing"
+          puts "Collection '#{name}' is already existing".colorize(:yellow)
           return found
         end
 
-        puts "Creating collection '#{name}'..."
+        puts "Creating collection '#{name}'...".colorize(:green)
         create_collection!(name)
       end
     end
