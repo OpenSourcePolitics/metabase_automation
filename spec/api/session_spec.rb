@@ -5,7 +5,7 @@ RSpec.describe DecidimMetabase::Api::Session do
 
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:conn) { Faraday.new { |b| b.adapter(:test, stubs) } }
-  let(:token_db_path) { "./spec/fixtures/token.private" }
+  let(:token_db_path) { "./spec/fixtures/token.public" }
   let(:http_response) { { "id" => new_token } }
   before do
     stubs.post("/api/session") do |_env|
@@ -15,7 +15,7 @@ RSpec.describe DecidimMetabase::Api::Session do
     end
 
     Faraday.default_connection = conn
-    allow(File).to receive(:exists?).with(token_db_path).and_return(false)
+    allow(File).to receive(:exist?).with(token_db_path).and_return(false)
   end
 
   after do
@@ -57,10 +57,10 @@ RSpec.describe DecidimMetabase::Api::Session do
   end
 
   context "when token is already stored locally" do
-    let(:token_db_path) { "spec/fixtures/token.private" }
+    let(:token_db_path) { "spec/fixtures/token.public" }
 
     before do
-      allow(File).to receive(:exists?).with(token_db_path).and_return(true)
+      allow(File).to receive(:exist?).with(token_db_path).and_return(true)
     end
 
     it "reads token from DB file" do

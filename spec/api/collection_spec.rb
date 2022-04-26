@@ -6,7 +6,7 @@ RSpec.describe DecidimMetabase::Api::Collection do
   let(:conn) { Faraday.new { |b| b.adapter(:test, stubs) } }
   let(:api_session) { DecidimMetabase::Api::Session.new(conn, params_h, token_db_path) }
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
-  let(:token_db_path) { "./spec/fixtures/token.private" }
+  let(:token_db_path) { "./spec/fixtures/token.public" }
   let(:http_request) { DecidimMetabase::HttpRequests.new(api_session) }
   let(:session_response) { { "id" => new_token } }
   let(:collection_name) { "Rspec collection" }
