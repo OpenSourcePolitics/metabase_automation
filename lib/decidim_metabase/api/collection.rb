@@ -38,6 +38,8 @@ module DecidimMetabase
         json = JSON.parse(request.body)
 
         puts "Collection ID/#{json["id"]} successfully created".colorize(:green)
+
+        json
       end
 
       # Find a unique collection from available collections

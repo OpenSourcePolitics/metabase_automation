@@ -135,7 +135,7 @@ module DecidimMetabase
       end
 
       def interpret_organization?
-        query.include?("{{#ORGANIZATION}}")
+        query.include?("{{#organizations}}")
       end
 
       def interpret_organization(cards)
@@ -147,7 +147,7 @@ module DecidimMetabase
           return false
         end
 
-        query.gsub!("{{#ORGANIZATION}}", "{{##{target&.id}}}")
+        query.gsub!("{{#organizations}}", "{{##{target&.id}}}")
         true
       end
 

@@ -48,7 +48,7 @@ begin
   api_database = DecidimMetabase::Api::Database.new(http_request)
 
   decidim_db = api_database.find_by(configs["database"]["decidim"]["name"])
-  puts "Database '#{configs["database"]["decidim"]["name"]}' found (ID:#{decidim_db["id"]})".colorize(:green)
+  puts "Database '#{configs["database"]["decidim"]["name"]}' found (ID/#{decidim_db["id"]})".colorize(:green)
 
   api_collection = DecidimMetabase::Api::Collection.new(http_request)
   collection = api_collection.find_or_create!(configs["collection_name"])
