@@ -22,6 +22,11 @@ Pull the defined submodules
 
 Move `config.yml.example` to `config.yml` and replace placeholders by your configuration.
 
+Don't forget to setup env variables for metabase connection:
+```bash
+export METABASE_HOST="metabase.example.com" && export METABASE_USERNAME="john@doe.com" && export METABASE_PASSWORD="secretpassword"
+```
+
 ## Usage
 
 You can easily execute the program with one of these commands : 
