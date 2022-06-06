@@ -27,7 +27,6 @@ module DecidimMetabase
         @organization_payload = interpret(cards, "organization")
         @components_payload = interpret(cards, "components")
         @forms_payload = interpret(cards, "forms")
-        byebug
       end
 
       def update_id!(id)
