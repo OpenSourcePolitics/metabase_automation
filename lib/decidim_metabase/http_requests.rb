@@ -3,6 +3,8 @@
 module DecidimMetabase
   # HttpRequests contains HTTP queries to work with Metabase
   class HttpRequests
+    attr_reader :api_session
+
     def initialize(api_session)
       @api_session = api_session
       @conn = api_session.conn

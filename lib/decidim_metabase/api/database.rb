@@ -21,6 +21,7 @@ module DecidimMetabase
 
       def databases
         request = @http_request.get("/api/database", { "include_cards" => "true" })
+        @http_request.api_session.refresh_token! if request.body == "Unauthenticated"
         body = JSON.parse(request.body)
 
         @databases = body["data"]
