@@ -24,8 +24,9 @@ module DecidimMetabase
       # Replace query with interpreted values based on previous cards
       def interpreter!(configs, cards)
         interpret_host(configs["host"])
-        @organization_payload = interpret_organization(cards)
-        @components_payload = interpret_components(cards)
+        @organization_payload = interpret(cards, "organization")
+        @components_payload = interpret(cards, "components")
+        @forms_payload = interpret(cards, "forms")
       end
 
       def update_id!(id)
@@ -76,6 +77,11 @@ module DecidimMetabase
 
         if @components_payload
           target = find_card_by("components", cards)
+          payload.merge!(dependencie_payload(payload, target.id))
+        end
+        
+        if @forms_payload
+          target = find_card_by("forms", cards)
           payload.merge!(dependencie_payload(payload, target.id))
         end
 
@@ -133,6 +139,23 @@ module DecidimMetabase
 
         query.gsub!("$HOST", "'#{host}'")
       end
+      
+      def interpret?(x)
+        query.include?("{{##{x}}}")
+      end
+      
+      def interpret(cards, x)
+        return false unless interpret?(x)
+
+        target = find_card_by(x, cards)
+        unless target.respond_to?(:id) && target&.id.is_a?(Integer)
+          puts "ID not found for '#{name}'"
+          return false
+        end
+
+        query.gsub!("{{##{x}}}", "{{##{target&.id}}}")
+        true
+      end
 
       def interpret_organization?
         query.include?("{{#organizations}}")
@@ -165,6 +188,24 @@ module DecidimMetabase
         end
 
         query.gsub!("{{#components}}", "{{##{target&.id}}}")
+
+        true
+      end
+
+      def interpret_forms?
+        query.include?("{{#forms}}")
+      end
+
+      def interpret_forms(cards)
+        return false unless interpret_forms?
+
+        target = find_card_by("forms", cards)
+        unless target.respond_to?(:id) && target&.id.is_a?(Integer)
+          puts "ID not found for '#{name}'"
+          return false
+        end
+
+        query.gsub!("{{#forms}}", "{{##{target&.id}}}")
 
         true
       end
