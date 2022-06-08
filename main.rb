@@ -8,7 +8,6 @@ require "faraday/net_http"
 require "dotenv/load"
 require "yaml"
 require "colorize"
-require "byebug"
 
 def render_ascii_art
   File.readlines("ascii.txt")[0..-2].each do |line|
