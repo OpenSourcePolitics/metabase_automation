@@ -9,3 +9,6 @@ submodule:
 
 update-modules:
 	git submodule update --remote
+
+reset-modules:
+	git submodule update --init
