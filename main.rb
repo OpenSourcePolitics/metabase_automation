@@ -48,10 +48,11 @@ begin
   # Metabase database API
   api_database = DecidimMetabase::Api::Database.new(http_request)
 
+  # Interpret local queries from decidim cards
   query_interpreter = DecidimMetabase::QueryInterpreter
 
-  decidim_db = api_database.find_by(configs["database"]["decidim"]["name"])
-  puts "Database '#{configs["database"]["decidim"]["name"]}' found (ID/#{decidim_db["id"]})".colorize(:green)
+  decidim_db = DecidimMetabase::Object::Database.new(api_database.find_by(configs["database"]["decidim"]["name"]))
+  puts "Database '#{decidim_db.name}' found (ID/#{decidim_db.id})".colorize(:green)
 
   api_collection = DecidimMetabase::Api::Collection.new(http_request)
   metabase_collection_response = api_collection.find_or_create!(configs["collection_name"])
@@ -111,7 +112,7 @@ begin
       puts "Updating card '#{card.name}'".colorize(:yellow)
       request = http_request.put(
         "/api/card/#{card.id}",
-        card.payload(metabase_collection, decidim_db["id"], CARDS)
+        card.payload(metabase_collection, decidim_db.id, CARDS)
       )
 
       body = JSON.parse(request.body)
@@ -121,7 +122,7 @@ begin
       puts "Creating card '#{card.name}'".colorize(:green)
       request = http_request.post(
         "/api/card",
-        card.payload(metabase_collection, decidim_db["id"], CARDS)
+        card.payload(metabase_collection, decidim_db.id, CARDS)
       )
 
       body = JSON.parse(request.body)
