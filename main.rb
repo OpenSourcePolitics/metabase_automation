@@ -63,7 +63,7 @@ begin
   filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection)
 
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
-    .colorize(:light_yellow)
+    .colorize(:yellow)
 
   if (filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)).count.positive?
     puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}"
