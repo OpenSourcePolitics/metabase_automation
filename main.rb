@@ -52,7 +52,7 @@ begin
   query_interpreter = DecidimMetabase::QueryInterpreter
 
   decidim_db = DecidimMetabase::Object::Database.new(api_database.find_by(configs["database"]["decidim"]["name"]))
-  puts "Database '#{decidim_db.name}' found (ID/#{decidim_db.id})".colorize(:green)
+  puts "Database '#{decidim_db.name}' found (ID/#{decidim_db.id})".colorize(:light_green)
 
   metabase_collection_response = DecidimMetabase::Api::Collection.new(http_request).find_or_create!(configs["collection_name"])
   metabase_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
@@ -62,10 +62,10 @@ begin
   metabase_collection.cards_from!(api_cards.cards)
   filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection)
 
-  puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'".colorize(:yellow)
+  puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'".colorize(:light_yellow)
 
   if (filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)).count.positive?
-    puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}".colorize(:green)
+    puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}".colorize(:light_green)
   end
 
   CARDS = filesystem_collection.cards + metabase_collection.cards
@@ -79,27 +79,27 @@ begin
     card.build_payload!(metabase_collection, decidim_db.id, CARDS)
 
     if card.exist && card.need_update
-      puts "Updating card '#{card.name}' (ID/#{card.id})".colorize(:yellow)
+      puts "Updating card '#{card.name}' (ID/#{card.id})".colorize(:light_yellow)
       updated = api_cards.update(card)
-      puts "Card successfully updated (ID/#{updated["id"]})".colorize(:green)
+      puts "Card successfully updated (ID/#{updated["id"]})".colorize(:light_green)
       card.update_id!(updated["id"]) if card.id != updated["id"]
     elsif !card.exist
-      puts "Creating card '#{card.name}'".colorize(:green)
+      puts "Creating card '#{card.name}'".colorize(:light_green)
       created = api_cards.create(card)
-      puts "Card successfully created (ID/#{created["id"]})".colorize(:green)
+      puts "Card successfully created (ID/#{created["id"]})".colorize(:light_green)
       card.update_id!(created["id"]) if card.id != created["id"]
     else
-      puts "Card '#{card.name}' already up-to-date".colorize(:blue)
+      puts "Card '#{card.name}' already up-to-date".colorize(:green)
     end
   end
 
-  puts "Program successfully terminated (Exit code: 0)".colorize(:green)
+  puts "Program successfully terminated (Exit code: 0)".colorize(:light_green)
   exit 0
 rescue StandardError => e
-  puts "[#{e.class}] #{e.message} (Exit code: 2)".colorize(:red)
-  puts e.backtrace.join("\n").colorize(:red) if ARGV.include?("-v")
-  puts "You can enable verbose mode using '-v' to have the backtrace".colorize(:yellow) unless ARGV.include?("-v")
-  puts "Operation terminated".colorize(:red)
+  puts "[#{e.class}] #{e.message} (Exit code: 2)".colorize(:light_red)
+  puts e.backtrace.join("\n").colorize(:light_red) if ARGV.include?("-v")
+  puts "You can enable verbose mode using '-v' to have the backtrace".colorize(:light_yellow) unless ARGV.include?("-v")
+  puts "Operation terminated".colorize(:light_red)
 
   exit 2
 end
