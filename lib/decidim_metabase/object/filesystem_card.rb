@@ -16,6 +16,7 @@ module DecidimMetabase
         return unless File.exist? info_path
         return unless File.exist? locales_path
 
+        @resource = yaml_info["resource"]
         serialize_to_h
       end
 
@@ -31,9 +32,8 @@ module DecidimMetabase
         !yaml_info.dig("query", "info", "meta", "depends_on").nil?
       end
 
-      # TODO: Must be updated once translation enabled
       def name
-        @name ||= @path.split("/")[-1].gsub("_", " ").downcase
+        @name ||= yaml_locales["name"]
       end
 
       def yaml_info
@@ -65,7 +65,7 @@ module DecidimMetabase
       alias build_payload! build_payload
 
       def find_card_by(name, cards)
-        found = cards.select { |card| card.name == name }
+        found = cards.select { |card| card.resource == name }
         return found.first if found.count == 1
 
         found.select { |elem| elem.instance_of?(DecidimMetabase::Object::Card) }.first

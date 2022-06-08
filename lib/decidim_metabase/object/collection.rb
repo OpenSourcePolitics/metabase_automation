@@ -56,6 +56,13 @@ module DecidimMetabase
 
       alias local_cards! local_cards
 
+      def define_resource(collection)
+        @cards.each do |card|
+          found = collection.find_card(card.name)
+          card.resource = found.resource unless found.nil?
+        end
+      end
+
       private
 
       # rubocop:disable Metrics/CyclomaticComplexity
@@ -66,7 +73,7 @@ module DecidimMetabase
 
           deps_ids = []
           card.dependencies.each do |dep|
-            deps_id = @cards.index { |elem| elem&.name == dep }
+            deps_id = @cards.index { |elem| elem&.resource == dep }
             deps_ids << deps_id unless deps_id.nil?
           end
           next if deps_ids.empty? || index > deps_ids.max

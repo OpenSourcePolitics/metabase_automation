@@ -32,7 +32,7 @@ module DecidimMetabase
 
       target = find_card_by(key, cards)
       unless target.respond_to?(:id) && target&.id.is_a?(Integer)
-        puts "ID not found"
+        puts "Card '#{key}' not found in #{cards.map(&:name)}".colorize(:red)
         return query
       end
 
@@ -40,7 +40,7 @@ module DecidimMetabase
     end
 
     def self.find_card_by(name, cards)
-      found = cards.select { |card| card.name == name }
+      found = cards.select { |card| card.resource == name }
       return found.first if found.count == 1
 
       found.select { |elem| elem.instance_of?(DecidimMetabase::Object::Card) }.first

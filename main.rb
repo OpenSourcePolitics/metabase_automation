@@ -8,6 +8,7 @@ require "faraday/net_http"
 require "dotenv/load"
 require "yaml"
 require "colorize"
+require "byebug"
 
 def render_ascii_art
   File.readlines("ascii.txt")[0..-2].each do |line|
@@ -61,6 +62,7 @@ begin
   api_cards = DecidimMetabase::Api::Card.new(http_request)
   metabase_collection.cards_from!(api_cards.cards)
   filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection)
+  metabase_collection.define_resource(filesystem_collection)
 
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
     .colorize(:yellow)
