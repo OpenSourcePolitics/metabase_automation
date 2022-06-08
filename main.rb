@@ -72,12 +72,14 @@ begin
 
     card = DecidimMetabase::Object::Card.new(online_card, false)
     next unless card&.collection_id == metabase_collection.id
-    puts "Found existing card '#{card.name}'".colorize(:green)
-
     card
   end.compact
 
-  puts "Cards prepared to be save in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'".colorize(:yellow)
+  puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'".colorize(:yellow)
+
+  if (filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)).count.positive?
+    puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}".colorize(:green)
+  end
 
   # Sorting fs cards by dependencies
   filesystem_collection.cards.each_with_index do |card, index|
@@ -98,7 +100,7 @@ begin
 
   CARDS = filesystem_collection.cards + metabase_collection.cards
 
-  filesystem_collection.cards.each_with_index do |card, idx|
+  filesystem_collection.cards.each_with_index do |card, _|
     card.query = query_interpreter.interpreter!(configs, card, CARDS)
 
     online_card = metabase_collection.find_card(card.name)

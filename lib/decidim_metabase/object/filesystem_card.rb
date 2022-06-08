@@ -33,7 +33,7 @@ module DecidimMetabase
 
       # TODO: Must be updated once translation enabled
       def name
-        @name ||= @path.split("/")[-1].downcase
+        @name ||= @path.split("/")[-1].gsub("_", " ").downcase
       end
 
       def yaml_info
