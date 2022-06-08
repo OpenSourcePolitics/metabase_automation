@@ -54,18 +54,9 @@ begin
   decidim_db = DecidimMetabase::Object::Database.new(api_database.find_by(configs["database"]["decidim"]["name"]))
   puts "Database '#{decidim_db.name}' found (ID/#{decidim_db.id})".colorize(:green)
 
-  api_collection = DecidimMetabase::Api::Collection.new(http_request)
-  metabase_collection_response = api_collection.find_or_create!(configs["collection_name"])
+  metabase_collection_response = DecidimMetabase::Api::Collection.new(http_request).find_or_create!(configs["collection_name"])
   metabase_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
   filesystem_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
-
-  filesystem_collection.cards = Dir.glob("./cards/decidim_cards/*").map do |path|
-    next unless File.directory?(path)
-
-    card = DecidimMetabase::Object::FileSystemCard.new(path)
-    card.collection_id = metabase_collection.id
-    card
-  end.compact.sort_by(&:dependencies)
 
   collection_online_cards = JSON.parse(http_request.get("/api/card/").body)
   metabase_collection.cards = collection_online_cards.map do |online_card|
@@ -73,8 +64,18 @@ begin
 
     card = DecidimMetabase::Object::Card.new(online_card, false)
     next unless card&.collection_id == metabase_collection.id
+
     card
   end.compact
+
+  filesystem_collection.cards = Dir.glob("./cards/decidim_cards/*").map do |path|
+    next unless File.directory?(path)
+
+    card = DecidimMetabase::Object::FileSystemCard.new(path)
+    card.collection_id = metabase_collection.id
+    card.card_exists?(metabase_collection)
+    card
+  end.compact.sort_by(&:dependencies)
 
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'".colorize(:yellow)
 
@@ -96,8 +97,6 @@ begin
 
     filesystem_collection.cards[index], filesystem_collection.cards[deps_ids.max] = filesystem_collection.cards[deps_ids.max], filesystem_collection.cards[index]
   end
-
-  filesystem_collection.cards.each { |fs_card| fs_card.card_exists?(metabase_collection) }
 
   CARDS = filesystem_collection.cards + metabase_collection.cards
 
