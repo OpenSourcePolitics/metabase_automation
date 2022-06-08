@@ -6,15 +6,16 @@ module DecidimMetabase
     class FileSystemCard < Card
       attr_accessor :query, :payload
 
-      def initialize(path)
+      def initialize(path, locale = "en")
         @path = path
+        @locale = locale
         @to_h = setup!
       end
 
       def setup!
         return unless File.directory?(@path)
         return unless File.exist? info_path
-        return unless File.exist? locales_path
+        @locale = "en" unless File.exist? locales_path
 
         @resource = yaml_info["resource"]
         serialize_to_h
@@ -125,7 +126,7 @@ module DecidimMetabase
       end
 
       def locales_path
-        "#{@path}/locales/en.yml"
+        "#{@path}/locales/#{@locale}.yml"
       end
 
       def info_path

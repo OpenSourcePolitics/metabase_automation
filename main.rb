@@ -61,7 +61,7 @@ begin
 
   api_cards = DecidimMetabase::Api::Card.new(http_request)
   metabase_collection.cards_from!(api_cards.cards)
-  filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection)
+  filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection, configs["language"])
   metabase_collection.define_resource(filesystem_collection)
 
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
