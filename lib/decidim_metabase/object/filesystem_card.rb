@@ -4,7 +4,7 @@ module DecidimMetabase
   module Object
     # Metabase card
     class FileSystemCard < Card
-      attr_accessor :query
+      attr_accessor :query, :payload
 
       def initialize(path)
         @path = path
@@ -50,15 +50,17 @@ module DecidimMetabase
 
       # Payload for Metabase API
       # Can be merged if variables must be interpreted
-      def payload(collection, decidim_db_id, cards)
+      def build_payload(collection, decidim_db_id, cards)
         payload = base_payload(collection, decidim_db_id)
 
         dependencies.each do |dep|
           payload.merge!(dependencie_payload(payload, find_card_by(dep, cards)&.id))
         end
 
-        payload
+        @payload = payload
       end
+
+      alias build_payload! build_payload
 
       def find_card_by(name, cards)
         found = cards.select { |card| card.name == name }

@@ -10,6 +10,16 @@ module DecidimMetabase
 
         @cards = body
       end
+
+      def create(card)
+        request = @http_request.post("/api/card/", card.payload)
+        JSON.parse(request.body)
+      end
+
+      def update(card)
+        request = @http_request.put("/api/card/#{card.id}", card.payload)
+        JSON.parse(request.body)
+      end
     end
   end
 end

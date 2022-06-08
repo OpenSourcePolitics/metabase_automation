@@ -59,43 +59,13 @@ begin
   filesystem_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
 
   api_cards = DecidimMetabase::Api::Card.new(http_request)
-  metabase_collection.cards = api_cards.cards.map do |online_card|
-    next if online_card["collection"].nil? || online_card["collection"].empty?
-
-    card = DecidimMetabase::Object::Card.new(online_card, false)
-    next unless card&.collection_id == metabase_collection.id
-
-    card
-  end.compact
-
-  filesystem_collection.cards = Dir.glob("./cards/decidim_cards/*").map do |path|
-    next unless File.directory?(path)
-
-    card = DecidimMetabase::Object::FileSystemCard.new(path)
-    card.collection_id = metabase_collection.id
-    card.card_exists?(metabase_collection)
-    card
-  end.compact.sort_by(&:dependencies)
+  metabase_collection.cards_from!(api_cards.cards)
+  filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection)
 
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'".colorize(:yellow)
 
   if (filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)).count.positive?
     puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}".colorize(:green)
-  end
-
-  # Sorting fs cards by dependencies
-  filesystem_collection.cards.each_with_index do |card, index|
-    next if card.dependencies.empty?
-
-    deps_ids = []
-    card.dependencies.each do |dep|
-      deps_id = filesystem_collection.cards.index { |elem| elem&.name == dep }
-      deps_ids << deps_id unless deps_id.nil?
-    end
-    next if deps_ids.empty?
-    next if index > deps_ids.max
-
-    filesystem_collection.cards[index], filesystem_collection.cards[deps_ids.max] = filesystem_collection.cards[deps_ids.max], filesystem_collection.cards[index]
   end
 
   CARDS = filesystem_collection.cards + metabase_collection.cards
@@ -106,29 +76,20 @@ begin
     online_card = metabase_collection.find_card(card.name)
     card.update_id!(online_card.id) if online_card&.id
     card.need_update = online_card&.query != card.query
+    card.build_payload!(metabase_collection, decidim_db.id, CARDS)
 
     if card.exist && card.need_update
-      puts "Updating card '#{card.name}'".colorize(:yellow)
-      request = http_request.put(
-        "/api/card/#{card.id}",
-        card.payload(metabase_collection, decidim_db.id, CARDS)
-      )
-
-      body = JSON.parse(request.body)
-      puts "Card successfully updated (ID/#{body["id"]})".colorize(:green)
-      card.update_id!(body["id"]) if card.id != body["id"]
+      puts "Updating card '#{card.name}' (ID/#{card.id})".colorize(:yellow)
+      updated = api_cards.update(card)
+      puts "Card successfully updated (ID/#{updated["id"]})".colorize(:green)
+      card.update_id!(updated["id"]) if card.id != updated["id"]
     elsif !card.exist
       puts "Creating card '#{card.name}'".colorize(:green)
-      request = http_request.post(
-        "/api/card",
-        card.payload(metabase_collection, decidim_db.id, CARDS)
-      )
-
-      body = JSON.parse(request.body)
-      puts "Card successfully created (ID/#{body["id"]})".colorize(:green)
-      card.update_id!(body["id"]) if card.id != body["id"]
+      created = api_cards.create(card)
+      puts "Card successfully created (ID/#{created["id"]})".colorize(:green)
+      card.update_id!(created["id"]) if card.id != created["id"]
     else
-      puts "Card '#{card.name}' already up-to-date".colorize(:green)
+      puts "Card '#{card.name}' already up-to-date".colorize(:blue)
     end
   end
 
