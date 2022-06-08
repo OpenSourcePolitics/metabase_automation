@@ -44,9 +44,11 @@ module DecidimMetabase
         @yaml_locales ||= YAML.load_file locales_path
       end
 
+      # rubocop:disable Lint/DuplicateMethods
       def query
         @query ||= yaml_info["query"]["sql"].chomp
       end
+      # rubocop:enable Lint/DuplicateMethods
 
       # Payload for Metabase API
       # Can be merged if variables must be interpreted
@@ -104,7 +106,6 @@ module DecidimMetabase
         }
       end
       # rubocop:enable Metrics/MethodLength
-
 
       private
 

@@ -39,7 +39,6 @@ module DecidimMetabase
       query.gsub!("{{##{key}}}", "{{##{target&.id}}}")
     end
 
-
     def self.find_card_by(name, cards)
       found = cards.select { |card| card.name == name }
       return found.first if found.count == 1

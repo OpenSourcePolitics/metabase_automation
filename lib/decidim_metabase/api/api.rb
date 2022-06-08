@@ -10,6 +10,7 @@ module DecidimMetabase
       end
     end
 
+    # Allows to communicate with the Metabase API
     class Api
       def initialize(http_request)
         unless http_request.is_a?(DecidimMetabase::HttpRequests)

@@ -2,11 +2,12 @@
 
 module DecidimMetabase
   module Object
-
     # Metabase collection
     class Collection
-      attr_accessor :authority_level, :description, :archived, :slug, :color, :can_write, :name, :personal_owner_id, :id, :location, :namespace, :cards
+      attr_accessor :authority_level, :description, :archived, :slug, :color, :can_write, :name, :personal_owner_id,
+                    :id, :location, :namespace, :cards
 
+      # rubocop:disable Metrics/MethodLength
       def initialize(hash)
         @authority_level = hash["authority_level"]
         @description = hash["description"]
@@ -20,6 +21,7 @@ module DecidimMetabase
         @location = hash["location"]
         @namespace = hash["namespace"]
       end
+      # rubocop:enable Metrics/MethodLength
 
       def find_card(name)
         @cards.select { |card| card&.name == name }.compact&.first
@@ -56,6 +58,8 @@ module DecidimMetabase
 
       private
 
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/AbcSize
       def sort_cards_by_dependencies
         @cards.each_with_index do |card, index|
           next if card.dependencies.empty?
@@ -65,12 +69,13 @@ module DecidimMetabase
             deps_id = @cards.index { |elem| elem&.name == dep }
             deps_ids << deps_id unless deps_id.nil?
           end
-          next if deps_ids.empty?
-          next if index > deps_ids.max
+          next if deps_ids.empty? || index > deps_ids.max
 
           @cards[index], @cards[deps_ids.max] = @cards[deps_ids.max], @cards[index]
         end
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/AbcSize
 
       alias sort_cards_by_dependencies! sort_cards_by_dependencies
     end

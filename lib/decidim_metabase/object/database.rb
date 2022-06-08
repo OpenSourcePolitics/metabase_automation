@@ -2,7 +2,6 @@
 
 module DecidimMetabase
   module Object
-
     # Metabase collection
     class Database
       attr_accessor :id, :name, :description

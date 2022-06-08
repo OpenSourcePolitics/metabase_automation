@@ -37,9 +37,9 @@ begin
 
   # Define API Session
   api_session = DecidimMetabase::Api::Session.new(conn, {
-    username: ENV.fetch("METABASE_USERNAME"),
-    password: ENV.fetch("METABASE_PASSWORD")
-  })
+                                                    username: ENV.fetch("METABASE_USERNAME"),
+                                                    password: ENV.fetch("METABASE_PASSWORD")
+                                                  })
 
   # HTTP Request builder
   http_request = DecidimMetabase::HttpRequests.new(api_session)
@@ -53,7 +53,8 @@ begin
   decidim_db = DecidimMetabase::Object::Database.new(api_database.find_by(configs["database"]["decidim"]["name"]))
   puts "Database '#{decidim_db.name}' found (ID/#{decidim_db.id})".colorize(:light_green)
 
-  metabase_collection_response = DecidimMetabase::Api::Collection.new(http_request).find_or_create!(configs["collection_name"])
+  metabase_collection_response = DecidimMetabase::Api::Collection.new(http_request)
+                                                                 .find_or_create!(configs["collection_name"])
   metabase_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
   filesystem_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
 
@@ -61,10 +62,12 @@ begin
   metabase_collection.cards_from!(api_cards.cards)
   filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection)
 
-  puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'".colorize(:light_yellow)
+  puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
+    .colorize(:light_yellow)
 
   if (filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)).count.positive?
-    puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}".colorize(:light_green)
+    puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}"
+      .colorize(:light_green)
   end
 
   CARDS = filesystem_collection.cards + metabase_collection.cards
