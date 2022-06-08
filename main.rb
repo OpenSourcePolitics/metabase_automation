@@ -58,8 +58,8 @@ begin
   metabase_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
   filesystem_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
 
-  collection_online_cards = JSON.parse(http_request.get("/api/card/").body)
-  metabase_collection.cards = collection_online_cards.map do |online_card|
+  api_cards = DecidimMetabase::Api::Card.new(http_request)
+  metabase_collection.cards = api_cards.cards.map do |online_card|
     next if online_card["collection"].nil? || online_card["collection"].empty?
 
     card = DecidimMetabase::Object::Card.new(online_card, false)
