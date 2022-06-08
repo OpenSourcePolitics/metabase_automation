@@ -6,10 +6,12 @@ module DecidimMetabase
     # Card mixes decidim_cards and Metabase card
     # It allows to take in account cards inter-dependencies
     class Card
-      attr_accessor :to_h, :path, :id
+      attr_accessor :to_h, :path, :id, :need_update, :exist
 
       def initialize(path)
         @path = path
+        @need_update = false
+        @exist = false
         @to_h = setup!
       end
 
@@ -24,7 +26,7 @@ module DecidimMetabase
       # Replace query with interpreted values based on previous cards
       def interpreter!(configs, cards)
         interpret_host(configs["host"])
-        @organization_payload = interpret(cards, "organization")
+        @organization_payload = interpret(cards, "organizations")
         @components_payload = interpret(cards, "components")
         @forms_payload = interpret(cards, "forms")
       end
@@ -65,6 +67,10 @@ module DecidimMetabase
         @query ||= yaml_info["query"]["sql"].chomp
       end
 
+      def interpreted_query
+        @interpreted_query ||= query
+      end
+
       # Payload for Metabase API
       # Can be merged if variables must be interpreted
       def payload(collection, decidim_db_id, cards)
@@ -79,7 +85,7 @@ module DecidimMetabase
           target = find_card_by("components", cards)
           payload.merge!(dependencie_payload(payload, target.id))
         end
-        
+
         if @forms_payload
           target = find_card_by("forms", cards)
           payload.merge!(dependencie_payload(payload, target.id))
@@ -105,7 +111,7 @@ module DecidimMetabase
       # rubocop:disable Metrics/MethodLength
       def base_payload(collection, decidim_db_id)
         {
-          collection_id: collection["id"],
+          collection_id: collection.id,
           name: yaml_locales["name"],
           display: "table",
           dataset: true,
@@ -139,74 +145,21 @@ module DecidimMetabase
 
         query.gsub!("$HOST", "'#{host}'")
       end
-      
-      def interpret?(x)
-        query.include?("{{##{x}}}")
-      end
-      
-      def interpret(cards, x)
-        return false unless interpret?(x)
 
-        target = find_card_by(x, cards)
+      def interpret?(key)
+        query.include?("{{##{key}}}")
+      end
+
+      def interpret(cards, key)
+        return false unless interpret?(key)
+
+        target = find_card_by(key, cards)
         unless target.respond_to?(:id) && target&.id.is_a?(Integer)
           puts "ID not found for '#{name}'"
           return false
         end
 
-        query.gsub!("{{##{x}}}", "{{##{target&.id}}}")
-        true
-      end
-
-      def interpret_organization?
-        query.include?("{{#organizations}}")
-      end
-
-      def interpret_organization(cards)
-        return false unless interpret_organization?
-
-        target = find_card_by("organizations", cards)
-        unless target.respond_to?(:id) && target&.id.is_a?(Integer)
-          puts "ID not found for '#{name}'"
-          return false
-        end
-
-        query.gsub!("{{#organizations}}", "{{##{target&.id}}}")
-        true
-      end
-
-      def interpret_components?
-        query.include?("{{#components}}")
-      end
-
-      def interpret_components(cards)
-        return false unless interpret_components?
-
-        target = find_card_by("components", cards)
-        unless target.respond_to?(:id) && target&.id.is_a?(Integer)
-          puts "ID not found for '#{name}'"
-          return false
-        end
-
-        query.gsub!("{{#components}}", "{{##{target&.id}}}")
-
-        true
-      end
-
-      def interpret_forms?
-        query.include?("{{#forms}}")
-      end
-
-      def interpret_forms(cards)
-        return false unless interpret_forms?
-
-        target = find_card_by("forms", cards)
-        unless target.respond_to?(:id) && target&.id.is_a?(Integer)
-          puts "ID not found for '#{name}'"
-          return false
-        end
-
-        query.gsub!("{{#forms}}", "{{##{target&.id}}}")
-
+        query.gsub!("{{##{key}}}", "{{##{target&.id}}}")
         true
       end
 

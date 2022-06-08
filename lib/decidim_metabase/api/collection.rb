@@ -26,6 +26,12 @@ module DecidimMetabase
         @collections = body
       end
 
+      def related_cards(collection_name)
+        collection_id = find_by(collection_name)["id"]
+        request = @http_request.get("/api/collection/#{collection_id}/items", { "models" => ["card"] })
+        JSON.parse(request.body)
+      end
+
       def create_collection!(name)
         request = @http_request.post("/api/collection", {
                                        name: name,

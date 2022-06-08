@@ -32,6 +32,17 @@ module DecidimMetabase
       post(url, params)
     end
 
+    def put(url, params = nil)
+      request = @conn.put(url, params&.to_json, @api_session.session_request_header)
+      raise DecidimMetabase::Api::TokenInvalid if request.status == 301
+
+      request
+    rescue DecidimMetabase::Api::TokenInvalid => e
+      puts "[#{e.class}] #{e.message}"
+      @api_session.refresh_token!
+      post(url, params)
+    end
+
     def self.token
       @api_session.token
     end
