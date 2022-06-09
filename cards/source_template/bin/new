@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+echo "[English] Enter name of the card, name displayed in Metabase: "
+echo "Example: Proposal votes"
+read name
+
+echo "Enter the folder name (please use downcased letters and underscore rather than whitespace :"
+echo "Example: proposal_votes"
+read x
+
+if [ -d $x ];then
+  echo "File '$x' already exists, please use another name"
+  exit 1
+fi
+
+echo "Creating card '${x}'..."
+
+cp -r bin/template ./$x
+
+sed -i '' -e "s/resource: template/resource: ${x}/" "./${x}/info.yml"
+sed -i '' -e "s/name: Template/name: ${name}/" "./${x}/locales/en.yml"
+sed -i '' -e "s/name: Template/name: ${name}/" "./${x}/locales/fr.yml"
