@@ -32,6 +32,11 @@ end
 
 def check_for_resource_in(info)
     resource = info["resource"]
+    if resource.nil?
+        puts "Error: Resource name not found in info.yml".colorize(:red)
+        create_resource_in(info)
+    end
+    info["resource"]
 end
 
 def check_for_query_in(info)
@@ -85,6 +90,12 @@ def ask_to_add_dependency(info, dependency, asked_dependencies)
         @yaml.transaction do
             @yaml["query"]["info"]["meta"]["depends_on"] << dependency
         end
+    end
+end
+
+def create_resource_in(info)
+    @yaml.transaction do
+        @yaml["resource"] = ""
     end
 end
 
