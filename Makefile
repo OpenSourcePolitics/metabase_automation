@@ -13,5 +13,8 @@ update-modules:
 reset-modules:
 	git submodule update --init
 
-verify-modules:
+check:
 	ruby bin/verification_script.rb
+
+auto_check:
+	ruby bin/verification_script.rb -y
