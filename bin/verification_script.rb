@@ -1,5 +1,4 @@
-# Navigate into each directory in the directory ../cards/decidim_cards
-# and run the verification script
+# Script that check every data in all decidim_cards cards to make sure every card is correct to use
 require 'yaml'
 require 'yaml/store'
 require 'colorize'
@@ -19,7 +18,7 @@ def check(folder)
                 ask_to_modify(info, folder)
             end
             dependencies = check_for_query_in(info)
-            #puts "#{folder} contains #{dependencies}"
+            
             unless dependencies.empty?
                 verify_if_dependencies_corresponds_with(dependencies, info)
             end
@@ -40,7 +39,7 @@ def check_for_resource_in(info)
 end
 
 def check_for_query_in(info)
-    #Search for query in a yaml structure
+    # Search for query in the yaml structure
     dependencies = []
     query_sql = info["query"]["sql"]
     regexp = /{{#(.*?)}}/
@@ -95,7 +94,7 @@ end
 
 def create_resource_in(info)
     @yaml.transaction do
-        @yaml["resource"] = ""
+        @yaml["resource"] = ''
     end
 end
 
