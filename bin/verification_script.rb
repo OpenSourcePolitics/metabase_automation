@@ -14,7 +14,7 @@ def check(folder)
     if File.exist?("info.yml")
       info = YAML.load_file("info.yml")
       # If name of file corresponds to check_for_resource_in(info)
-      unless check_for_resource_in(info) == folder.split("/")[3].strip
+      unless check_for_resource_in(info) == folder.split("/")[2].strip
         # Ask if user wants to autocorrect the resource name and write it to info.yml
         puts "Error: Resource name does not match the name of the folder".colorize(:red)
         ask_to_modify(info, folder)
@@ -75,9 +75,9 @@ def ask_to_modify(info, folder)
   return unless answer == "y"
 
   @yaml.transaction do
-    @yaml["resource"] = folder.split("/")[3].strip
+    @yaml["resource"] = folder.split("/")[2].strip
   end
-  puts "Resource name has been autocorrected to #{folder.split("/")[3].strip}".colorize(:cyan)
+  puts "Resource name has been autocorrected to #{folder.split("/")[2].strip}".colorize(:cyan)
 end
 
 def ask_to_add_dependency(info, dependency, _asked_dependencies)
@@ -110,10 +110,14 @@ def create_depends_on_in(_info)
   end
 end
 
-folders = Dir.glob("../cards/decidim_cards/*")
+folders = Dir.glob("cards/decidim_cards/*")
+puts folders
+unless folders.empty?
 folders.each do |folder|
   next unless File.directory?(folder)
-
   check(folder)
 end
 puts "Verification finished ! Everything is safe !".colorize(:green)
+else 
+    puts "Error: No cards found".colorize(:red)
+end
