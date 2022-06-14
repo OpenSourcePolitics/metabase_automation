@@ -1,0 +1,15 @@
+---
+resource: template
+query:
+  model: true
+  sql: |
+    select host from {{#organizations}}
+  info:
+    meta:
+      depends_on:
+        - organizations
+    filterables:
+      date:
+        attr: created_at
+        required: false
+    viz_settings:

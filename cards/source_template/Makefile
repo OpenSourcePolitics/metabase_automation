@@ -1,0 +1,2 @@
+new:
+	bin/new
