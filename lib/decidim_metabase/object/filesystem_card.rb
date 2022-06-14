@@ -15,6 +15,7 @@ module DecidimMetabase
       def setup!
         return unless File.directory?(@path)
         return unless File.exist? info_path
+
         @locale = "en" unless File.exist? locales_path
 
         @resource = yaml_info["resource"]
