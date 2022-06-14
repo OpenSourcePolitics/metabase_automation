@@ -5,6 +5,7 @@ module DecidimMetabase
   class QueryInterpreter
     def self.interpreter!(configs, card, cards)
       query = interpret_host(card.query, configs["host"])
+      query = interpret_language_code(card.query, configs["language"])
 
       card.dependencies.each do |dep|
         query = interpret(query, cards, dep)
@@ -21,6 +22,16 @@ module DecidimMetabase
 
     def self.interpret_host?(query)
       query.match?(/\$HOST/)
+    end
+
+    def self.interpret_language_code(query, language_code)
+      return query unless interpret_language_code?(query)
+
+      query.gsub!("$LANGUAGE_CODE", "#{language_code}")
+    end
+
+    def self.interpret_language_code?(query)
+      query.match?(/\$LANGUAGE_CODE/)
     end
 
     def self.interpret?(query, key)
