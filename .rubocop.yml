@@ -1,5 +1,7 @@
 AllCops:
   TargetRubyVersion: 2.7.1
+  Exclude:
+    - "bin/*.rb"
 
 Lint/MissingSuper:
   Enabled: true
