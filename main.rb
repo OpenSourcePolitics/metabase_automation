@@ -80,8 +80,8 @@ begin
     online_card = metabase_collection.find_card(card.name)
     card.update_id!(online_card.id) if online_card&.id
     card.need_update = online_card&.query != card.query
-    card.build_payload!(metabase_collection, decidim_db.id, CARDS)
 
+    card.build_payload!(metabase_collection, decidim_db.id, CARDS)
     if card.exist && card.need_update
       puts "Updating card '#{card.name}' (ID/#{card.id})".colorize(:light_yellow)
       updated = api_cards.update(card)

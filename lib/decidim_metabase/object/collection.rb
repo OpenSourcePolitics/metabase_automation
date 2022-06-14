@@ -49,7 +49,7 @@ module DecidimMetabase
           card.collection_id = metabase_collection.id
           card.card_exists?(metabase_collection)
           card
-        end.compact.sort_by(&:dependencies)
+        end.compact
 
         sort_cards_by_dependencies!
       end
@@ -65,24 +65,13 @@ module DecidimMetabase
 
       private
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/AbcSize
       def sort_cards_by_dependencies
-        @cards.each_with_index do |card, index|
-          next if card.dependencies.empty?
+        cards_graph = {}
+        @cards.each { |card| cards_graph[card.resource] = card.dependencies }
 
-          deps_ids = []
-          card.dependencies.each do |dep|
-            deps_id = @cards.index { |elem| elem&.resource == dep }
-            deps_ids << deps_id unless deps_id.nil?
-          end
-          next if deps_ids.empty? || index > deps_ids.max
-
-          @cards[index], @cards[deps_ids.max] = @cards[deps_ids.max], @cards[index]
-        end
+        topo_sort = DecidimMetabase::TopologicalSort.new(cards_graph).tsort
+        @cards = topo_sort.map { |resource| @cards.select { |card| card&.resource == resource }.compact&.first }
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/AbcSize
 
       alias sort_cards_by_dependencies! sort_cards_by_dependencies
     end

@@ -15,6 +15,7 @@ module DecidimMetabase
       def setup!
         return unless File.directory?(@path)
         return unless File.exist? info_path
+
         @locale = "en" unless File.exist? locales_path
 
         @resource = yaml_info["resource"]
@@ -57,7 +58,8 @@ module DecidimMetabase
         payload = base_payload(collection, decidim_db_id)
 
         dependencies.each do |dep|
-          payload.merge!(dependencie_payload(payload, find_card_by(dep, cards)&.id))
+          payload[:dataset_query]["native"]["template-tags"] ||= {}
+          payload[:dataset_query]["native"]["template-tags"].merge!(dependencie_payload(find_card_by(dep, cards)&.id))
         end
 
         @payload = payload
@@ -72,10 +74,10 @@ module DecidimMetabase
         found.select { |elem| elem.instance_of?(DecidimMetabase::Object::Card) }.first
       end
 
-      def dependencie_payload(payload, id)
+      def dependencie_payload(id)
         uuid = SecureRandom.uuid.to_s
 
-        payload[:dataset_query]["native"]["template-tags"] = {
+        {
           "##{id}" => {
             "id" => uuid,
             "name" => "##{id}",
