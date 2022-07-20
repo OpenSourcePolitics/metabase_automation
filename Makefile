@@ -9,3 +9,12 @@ submodule:
 
 update-modules:
 	git submodule update --remote
+
+reset-modules:
+	git submodule update --init
+
+check:
+	ruby bin/verification_script.rb
+
+auto_check:
+	ruby bin/verification_script.rb -y

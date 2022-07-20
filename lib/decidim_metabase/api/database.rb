@@ -10,17 +10,10 @@ module DecidimMetabase
     end
 
     # Database defines a Metabase Database
-    class Database
-      def initialize(http_request)
-        unless http_request.is_a?(DecidimMetabase::HttpRequests)
-          raise ::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing database."
-        end
-
-        @http_request = http_request
-      end
-
+    class Database < Api
       def databases
         request = @http_request.get("/api/database", { "include_cards" => "true" })
+        @http_request.api_session.refresh_token! if request.body == "Unauthenticated"
         body = JSON.parse(request.body)
 
         @databases = body["data"]

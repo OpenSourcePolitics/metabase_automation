@@ -35,4 +35,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "colorize"
   spec.add_dependency "dotenv"
   spec.add_dependency "faraday"
+  spec.add_dependency "tsort"
 end

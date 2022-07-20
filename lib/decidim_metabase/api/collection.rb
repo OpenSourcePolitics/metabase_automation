@@ -10,20 +10,18 @@ module DecidimMetabase
     end
 
     # Defines Metabase Collection
-    class Collection
-      def initialize(http_request)
-        unless http_request.is_a?(DecidimMetabase::HttpRequests)
-          raise ::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing Collection."
-        end
-
-        @http_request = http_request
-      end
-
+    class Collection < Api
       def collections
         request = @http_request.get("/api/collection")
         body = JSON.parse(request.body)
 
         @collections = body
+      end
+
+      def related_cards(collection_name)
+        collection_id = find_by(collection_name)["id"]
+        request = @http_request.get("/api/collection/#{collection_id}/items", { "models" => ["card"] })
+        JSON.parse(request.body)
       end
 
       def create_collection!(name)
