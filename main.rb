@@ -10,46 +10,22 @@ require "yaml"
 require "colorize"
 require "byebug"
 
-def render_ascii_art
-  File.readlines("ascii.txt")[0..-2].each do |line|
-    puts line
-  end
-  puts "                     Module Metabase (v#{DecidimMetabase::VERSION})".colorize(:cyan)
-  puts "                     By Open Source Politics.".colorize(:cyan)
-  puts "\n"
-end
-
-render_ascii_art
+main = DecidimMetabase::Main.new(true)
 
 ## Interesting things below...
-
 begin
   TOKEN_DB_PATH = "token.private"
-
   # Load file 'config.yml'
-  configs = YAML.load_file("config.yml")
-
+  main.configs = YAML.load_file("config.yml")
   # Define new Faraday connexion
   Faraday.default_adapter = :net_http
-  conn = Faraday.new(
-    url: "https://#{ENV.fetch("METABASE_HOST")}/",
-    headers: { "Content-Type" => "application/json" }
-  )
-
-  # Define API Session
-  api_session = DecidimMetabase::Api::Session.new(conn, {
-                                                    username: ENV.fetch("METABASE_USERNAME"),
-                                                    password: ENV.fetch("METABASE_PASSWORD")
-                                                  })
-
-  # HTTP Request builder
-  http_request = DecidimMetabase::HttpRequests.new(api_session)
-
-  # Metabase database API
-  api_database = DecidimMetabase::Api::Database.new(http_request)
+  main.connexion!
+  main.api_session!
+  main.http_request!
+  main.api_database!
 
   # Interpret local queries from decidim cards
-  query_interpreter = DecidimMetabase::QueryInterpreter
+  main.query_interpreter = DecidimMetabase::QueryInterpreter
 
   decidim_db = DecidimMetabase::Object::Database.new(api_database.find_by(configs["database"]["decidim"]["name"]))
   puts "Database '#{decidim_db.name}' found (ID/#{decidim_db.id})".colorize(:light_green)
@@ -65,11 +41,11 @@ begin
   metabase_collection.define_resource(filesystem_collection)
 
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
-    .colorize(:yellow)
+         .colorize(:yellow)
 
   if (filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)).count.positive?
     puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}"
-      .colorize(:light_green)
+           .colorize(:light_green)
   end
 
   CARDS = filesystem_collection.cards + metabase_collection.cards

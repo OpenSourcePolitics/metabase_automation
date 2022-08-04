@@ -15,6 +15,8 @@ require_relative "decidim_metabase/object/database"
 require_relative "decidim_metabase/http_requests"
 require_relative "decidim_metabase/query_interpreter"
 require_relative "decidim_metabase/topological_sort"
+require_relative "decidim_metabase/utils"
+require_relative "decidim_metabase/main"
 
 module DecidimMetabase
   class Error < StandardError; end
