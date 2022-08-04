@@ -2,7 +2,7 @@
 
 module DecidimMetabase
   class Main
-    attr_accessor :configs
+    attr_accessor :configs, :query_interpreter, :database
 
     def initialize(welcome)
       DecidimMetabase::Utils.welcome if welcome
