@@ -1,8 +1,9 @@
 ---
 database:
-  decidim:
+  decidim_cards:
     name: <EXISTING METABASE DATABASE>
-  matomo:
+  matomo_cards:
     name: <EXISTING METABASE DATABASE>
 collection_name: <NEW OR EXISTING METABASE COLLECTION>
 language: fr # en
+host: <HOST>
