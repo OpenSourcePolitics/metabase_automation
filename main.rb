@@ -27,24 +27,28 @@ begin
   # Interpret local queries from decidim cards
   main.query_interpreter = DecidimMetabase::QueryInterpreter
 
-  main.database = DecidimMetabase::Object::Database.new(main.api_database.find_by(main.configs["database"]["decidim"]["name"]))
-  puts "Database '#{main.database.name}' found (ID/#{main.database.id})".colorize(:light_green)
+  main.load_databases!
+  main.databases = main.databases.map do |hash|
+    hash["db_name"] = DecidimMetabase::Object::Database.new(main.api_database.find_by(hash["db_name"]))
+  end
+
+  main.databases.each do |db|
+    puts "Database '#{db.name}' found (ID/#{db.id})".colorize(:light_green)
+  end
 
   metabase_collection_response = DecidimMetabase::Api::Collection.new(main.http_request)
                                                                  .find_or_create!(main.configs["collection_name"])
-  metabase_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
-  filesystem_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
-  matomo_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
 
   api_cards = DecidimMetabase::Api::Card.new(main.http_request)
+  collections = []
+  metabase_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
   metabase_collection.cards_from!(api_cards.cards)
-  filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection, main.configs["language"])
-  matomo_collection.local_cards!(Dir.glob("./cards/matomo_cards/*"), metabase_collection, main.configs["language"])
+  collections << metabase_collection
+
+  filesystem_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
+
+  main.load_all_fs_cards(filesystem_collection, metabase_collection)
   metabase_collection.define_resource(filesystem_collection)
-  metabase_collection.define_resource(matomo_collection)
-
-  filesystem_collection.cards += matomo_collection.cards
-
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
          .colorize(:yellow)
 
@@ -62,7 +66,8 @@ begin
     card.update_id!(online_card.id) if online_card&.id
     card.need_update = online_card&.query != card.query
 
-    card.build_payload!(metabase_collection, main.database.id, CARDS)
+    card.build_payload!(metabase_collection, main.find_db_for(card.cards_name).id, CARDS)
+
     if card.exist && card.need_update
       puts "Updating card '#{card.name}' (ID/#{card.id})".colorize(:light_yellow)
       updated = api_cards.update(card)
