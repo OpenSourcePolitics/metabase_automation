@@ -22,10 +22,9 @@ module DecidimMetabase
 
     def api_session
       @api_session ||= DecidimMetabase::Api::Session.new(conn, {
-        username: ENV.fetch("METABASE_USERNAME"),
-        password: ENV.fetch("METABASE_PASSWORD")
-        }
-      )
+                                                           username: ENV.fetch("METABASE_USERNAME"),
+                                                           password: ENV.fetch("METABASE_PASSWORD")
+                                                         })
     end
     alias api_session! api_session
 

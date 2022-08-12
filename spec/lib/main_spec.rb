@@ -4,20 +4,20 @@ module DecidimMetabase
   RSpec.describe Main do
     let(:subject) { described_class.new(message) }
     let(:message) { false }
-    let(:metabase_host) { 'example.metabase.com' }
-    let(:metabase_username) { 'user123456' }
-    let(:metabase_pwd) { 'password123456' }
+    let(:metabase_host) { "example.metabase.com" }
+    let(:metabase_username) { "user123456" }
+    let(:metabase_pwd) { "password123456" }
     let(:env_vars) do
       [
-        { 'METABASE_HOST' => metabase_host },
-        { 'METABASE_USERNAME' => metabase_username },
-        { 'METABASE_PASSWORD' => metabase_pwd }
+        { "METABASE_HOST" => metabase_host },
+        { "METABASE_USERNAME" => metabase_username },
+        { "METABASE_PASSWORD" => metabase_pwd }
       ]
     end
     let(:token_db_path) { "./spec/fixtures/token.public" }
 
     before do
-      env_vars.each { |hash| stub_const('ENV', ENV.to_hash.merge(hash)) }
+      env_vars.each { |hash| stub_const("ENV", ENV.to_hash.merge(hash)) }
     end
 
     describe "#initialize" do
@@ -93,9 +93,9 @@ module DecidimMetabase
                                         { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
                                       ])
         expect(sub.databases).to eq([
-                                        { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
-                                        { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
-                                      ])
+                                      { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
+                                      { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
+                                    ])
       end
     end
   end

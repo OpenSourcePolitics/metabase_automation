@@ -50,11 +50,11 @@ begin
   main.load_all_fs_cards(filesystem_collection, metabase_collection)
   metabase_collection.define_resource(filesystem_collection)
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
-         .colorize(:yellow)
+    .colorize(:yellow)
 
   if (filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)).count.positive?
     puts "Creating new cards #{filesystem_collection.cards.map(&:name) - metabase_collection.cards.map(&:name)}"
-           .colorize(:light_green)
+      .colorize(:light_green)
   end
 
   CARDS = filesystem_collection.cards + metabase_collection.cards
