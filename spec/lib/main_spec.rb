@@ -81,13 +81,13 @@ module DecidimMetabase
     end
 
     describe "#load_databases!" do
-      let(:configs_yml) { ::YAML.load_file("./spec/fixtures/config.yml") }
+      let(:configs_yml) { ::YAML.load_file("./spec/fixtures/config-example.yml") }
 
       it "returns an array of Hash" do
         sub = subject
         sub.configs = configs_yml
-        expect(sub.load_databases!).to include({ "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" })
-        expect(sub.load_databases!).to include({ "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" })
+        sub.load_databases!
+
         expect(sub.db_registry).to eq([
                                         { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
                                         { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
