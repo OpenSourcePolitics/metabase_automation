@@ -14,7 +14,7 @@ module DecidimMetabase
     # Define new Faraday connexion
     def conn
       @conn ||= Faraday.new(
-        url: "https://#{ENV.fetch("METABASE_HOST")}/",
+        url: "https://#{DecidimMetabase.env("METABASE_HOST")}/",
         headers: { "Content-Type" => "application/json" }
       )
     end
@@ -22,8 +22,8 @@ module DecidimMetabase
 
     def api_session
       @api_session ||= DecidimMetabase::Api::Session.new(conn, {
-                                                           username: ENV.fetch("METABASE_USERNAME"),
-                                                           password: ENV.fetch("METABASE_PASSWORD")
+                                                           username: DecidimMetabase.env("METABASE_USERNAME"),
+                                                           password: DecidimMetabase.env("METABASE_PASSWORD")
                                                          })
     end
     alias api_session! api_session
@@ -50,9 +50,9 @@ module DecidimMetabase
     end
 
     def load_all_fs_cards(collection, metabase_collection)
-      Dir.glob("./cards/*").each do |path|
+      Dir.glob(DecidimMetabase.cards_path).each do |path|
         next unless File.directory? path
-        next if File.basename(path) == "source_template"
+        next if DecidimMetabase.ignore_card?(path)
 
         collection.local_cards!(Dir.glob("#{path}/*"), metabase_collection, configs["language"])
       end
