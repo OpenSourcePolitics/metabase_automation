@@ -2,6 +2,8 @@
 
 require "decidim_metabase"
 require "faraday"
+require "colorize"
+require "yaml"
 require "byebug"
 
 RSpec.configure do |config|
