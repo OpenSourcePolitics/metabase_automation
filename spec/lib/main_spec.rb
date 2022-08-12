@@ -15,6 +15,7 @@ module DecidimMetabase
       ]
     end
     let(:token_db_path) { "./spec/fixtures/token.public" }
+    let(:configs_yml) { ::YAML.load_file("./spec/fixtures/config-example.yml") }
 
     before do
       env_vars.each { |hash| stub_const("ENV", ENV.to_hash.merge(hash)) }
@@ -81,8 +82,6 @@ module DecidimMetabase
     end
 
     describe "#load_databases!" do
-      let(:configs_yml) { ::YAML.load_file("./spec/fixtures/config-example.yml") }
-
       it "returns an array of Hash" do
         sub = subject
         sub.configs = configs_yml
@@ -96,6 +95,21 @@ module DecidimMetabase
                                       { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
                                       { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
                                     ])
+      end
+    end
+
+    describe "#find_db_for" do
+      let(:sub) do
+        sub = subject
+        sub.configs = configs_yml
+        sub.load_databases!
+        sub
+      end
+
+      let(:card) { DecidimMetabase::Object::FileSystemCard.new("./spec/fixtures/cards/decidim_cards/organizations") }
+
+      it "returns the database related to card type" do
+        expect(sub.find_db_for(card)).to eq("Decidim Cards Database")
       end
     end
   end

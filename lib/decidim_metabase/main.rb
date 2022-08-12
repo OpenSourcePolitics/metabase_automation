@@ -59,7 +59,7 @@ module DecidimMetabase
     end
 
     def find_db_for(card)
-      db_registry.select { |hash| hash["cards"] == card }.first["db_name"]
+      db_registry.select { |hash| hash["cards"] == card.cards_name }.first["db_name"]
     end
   end
 end

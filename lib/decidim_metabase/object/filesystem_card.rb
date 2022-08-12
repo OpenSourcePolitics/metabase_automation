@@ -13,7 +13,7 @@ module DecidimMetabase
       end
 
       def cards_name
-        @path.split("/")[2]
+        @path.split("/")[-2]
       end
 
       def setup!
