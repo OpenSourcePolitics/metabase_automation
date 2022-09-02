@@ -28,15 +28,6 @@ module DecidimMetabase
           subject
         end.not_to output.to_stdout
       end
-
-      context "when message is set to true" do
-        let(:message) { true }
-        it "initializes and prints to stdout" do
-          expect do
-            subject
-          end.to output.to_stdout
-        end
-      end
     end
 
     describe "#conn" do
