@@ -12,6 +12,10 @@ module DecidimMetabase
         @to_h = setup!
       end
 
+      def cards_name
+        @path.split("/")[-2]
+      end
+
       def setup!
         return unless File.directory?(@path)
         return unless File.exist? info_path

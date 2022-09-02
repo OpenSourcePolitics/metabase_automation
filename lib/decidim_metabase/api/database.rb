@@ -26,7 +26,7 @@ module DecidimMetabase
         db = databases&.select { |database| name == database["name"] }.compact.first
         # rubocop:enable Lint/SafeNavigationChain
 
-        raise DatabaseNotFound if db.nil? || db.empty?
+        raise DatabaseNotFound.new(nil, "Unknown dabatase '#{name}'") if db.nil? || db.empty?
 
         db
       end

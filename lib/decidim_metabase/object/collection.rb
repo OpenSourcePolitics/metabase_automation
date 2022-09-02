@@ -42,7 +42,7 @@ module DecidimMetabase
       alias cards_from! cards_from
 
       def local_cards(paths, metabase_collection, locale)
-        @cards = paths.map do |path|
+        cards = paths.map do |path|
           next unless File.directory?(path)
 
           card = DecidimMetabase::Object::FileSystemCard.new(path, locale)
@@ -51,9 +51,10 @@ module DecidimMetabase
           card
         end.compact
 
+        @cards ||= []
+        @cards += cards
         sort_cards_by_dependencies!
       end
-
       alias local_cards! local_cards
 
       def define_resource(collection)

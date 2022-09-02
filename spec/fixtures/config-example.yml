@@ -1,0 +1,12 @@
+---
+database:
+  decidim_cards:
+    name: Decidim Cards Database
+  matomo_cards:
+    name: Matomo Cards Database
+collection_name: Collection name
+
+
+#language: en
+language: fr
+host: example.host.com

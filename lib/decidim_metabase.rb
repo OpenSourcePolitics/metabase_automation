@@ -15,8 +15,23 @@ require_relative "decidim_metabase/object/database"
 require_relative "decidim_metabase/http_requests"
 require_relative "decidim_metabase/query_interpreter"
 require_relative "decidim_metabase/topological_sort"
+require_relative "decidim_metabase/utils"
+require_relative "decidim_metabase/main"
 
 module DecidimMetabase
   class Error < StandardError; end
-  # Your code goes here...
+
+  IGNORE_CARDS = %w[source_template].freeze
+
+  def self.env(key)
+    ENV.fetch(key, "")
+  end
+
+  def self.cards_path
+    "./cards/*"
+  end
+
+  def self.ignore_card?(path)
+    IGNORE_CARDS.include?(File.basename(path))
+  end
 end
