@@ -18,6 +18,7 @@ require_relative "decidim_metabase/topological_sort"
 require_relative "decidim_metabase/utils"
 require_relative "decidim_metabase/main"
 
+# DecidimMetabase allows to create and manage Metabase cards
 module DecidimMetabase
   class Error < StandardError; end
 

@@ -10,15 +10,12 @@ require "yaml"
 require "colorize"
 require "byebug"
 
+Faraday.default_adapter = :net_http
 main = DecidimMetabase::Main.new(true)
 
 ## Interesting things below...
 begin
-  TOKEN_DB_PATH = "token.private"
-  # Load file 'config.yml'
-  main.configs = YAML.load_file("config.yml")
-  # Define new Faraday connexion
-  Faraday.default_adapter = :net_http
+  main.load_configs!
   main.connexion!
   main.api_session!
   main.http_request!
@@ -69,7 +66,8 @@ begin
     card.build_payload!(metabase_collection, main.find_db_for(card).id, CARDS)
 
     if card.exist && card.need_update
-      puts "Updating card '#{card.name}' (ID/#{card.id}) with URL : #{conn.build_url.to_s}question/#{card.id}".colorize(:light_yellow)
+      puts "Updating card '#{card.name}' (ID/#{card.id}) with URL : #{conn.build_url}question/#{card.id}"
+        .colorize(:light_yellow)
       updated = api_cards.update(card)
       puts "Card successfully updated (ID/#{updated["id"]})".colorize(:light_green)
       card.update_id!(updated["id"]) if card.id != updated["id"]

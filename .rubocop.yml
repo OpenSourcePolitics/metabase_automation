@@ -34,11 +34,12 @@ Metrics/AbcSize:
 Metrics/ModuleLength:
   Enabled: true
   Exclude:
-    - spec/api/collection_spec.rb
+    - spec/**/*_spec.rb
 
 Metrics/BlockLength:
   Enabled: true
   Exclude:
-    - spec/api/collection_spec.rb
-    - spec/api/database_spec.rb
-    - spec/api/session_spec.rb
+    - spec/**/*_spec.rb
+
+Metrics/ClassLength:
+  Enabled: false
