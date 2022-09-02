@@ -10,60 +10,45 @@ require "yaml"
 require "colorize"
 require "byebug"
 
-def render_ascii_art
-  File.readlines("ascii.txt")[0..-2].each do |line|
-    puts line
-  end
-  puts "                     Module Metabase (v#{DecidimMetabase::VERSION})".colorize(:cyan)
-  puts "                     By Open Source Politics.".colorize(:cyan)
-  puts "\n"
-end
-
-render_ascii_art
+main = DecidimMetabase::Main.new(true)
 
 ## Interesting things below...
-
 begin
   TOKEN_DB_PATH = "token.private"
-
   # Load file 'config.yml'
-  configs = YAML.load_file("config.yml")
-
+  main.configs = YAML.load_file("config.yml")
   # Define new Faraday connexion
   Faraday.default_adapter = :net_http
-  conn = Faraday.new(
-    url: "https://#{ENV.fetch("METABASE_HOST")}/",
-    headers: { "Content-Type" => "application/json" }
-  )
-
-  # Define API Session
-  api_session = DecidimMetabase::Api::Session.new(conn, {
-                                                    username: ENV.fetch("METABASE_USERNAME"),
-                                                    password: ENV.fetch("METABASE_PASSWORD")
-                                                  })
-
-  # HTTP Request builder
-  http_request = DecidimMetabase::HttpRequests.new(api_session)
-
-  # Metabase database API
-  api_database = DecidimMetabase::Api::Database.new(http_request)
+  main.connexion!
+  main.api_session!
+  main.http_request!
+  main.api_database!
 
   # Interpret local queries from decidim cards
-  query_interpreter = DecidimMetabase::QueryInterpreter
+  main.query_interpreter = DecidimMetabase::QueryInterpreter
 
-  decidim_db = DecidimMetabase::Object::Database.new(api_database.find_by(configs["database"]["decidim"]["name"]))
-  puts "Database '#{decidim_db.name}' found (ID/#{decidim_db.id})".colorize(:light_green)
+  main.load_databases!
+  main.databases = main.databases.map do |hash|
+    hash["db_name"] = DecidimMetabase::Object::Database.new(main.api_database.find_by(hash["db_name"]))
+  end
 
-  metabase_collection_response = DecidimMetabase::Api::Collection.new(http_request)
-                                                                 .find_or_create!(configs["collection_name"])
+  main.databases.each do |db|
+    puts "Database '#{db.name}' found (ID/#{db.id})".colorize(:light_green)
+  end
+
+  metabase_collection_response = DecidimMetabase::Api::Collection.new(main.http_request)
+                                                                 .find_or_create!(main.configs["collection_name"])
+
+  api_cards = DecidimMetabase::Api::Card.new(main.http_request)
+  collections = []
   metabase_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
+  metabase_collection.cards_from!(api_cards.cards)
+  collections << metabase_collection
+
   filesystem_collection = DecidimMetabase::Object::Collection.new(metabase_collection_response)
 
-  api_cards = DecidimMetabase::Api::Card.new(http_request)
-  metabase_collection.cards_from!(api_cards.cards)
-  filesystem_collection.local_cards!(Dir.glob("./cards/decidim_cards/*"), metabase_collection, configs["language"])
+  main.load_all_fs_cards(filesystem_collection, metabase_collection)
   metabase_collection.define_resource(filesystem_collection)
-
   puts "Cards prepared to be saved in Metabase '#{filesystem_collection.cards.map(&:name).join(", ")}'"
     .colorize(:yellow)
 
@@ -75,13 +60,14 @@ begin
   CARDS = filesystem_collection.cards + metabase_collection.cards
 
   filesystem_collection.cards.each_with_index do |card, _|
-    card.query = query_interpreter.interpreter!(configs, card, CARDS)
+    card.query = main.query_interpreter.interpreter!(main.configs, card, CARDS)
 
     online_card = metabase_collection.find_card(card.name)
     card.update_id!(online_card.id) if online_card&.id
     card.need_update = online_card&.query != card.query
 
-    card.build_payload!(metabase_collection, decidim_db.id, CARDS)
+    card.build_payload!(metabase_collection, main.find_db_for(card).id, CARDS)
+
     if card.exist && card.need_update
       puts "Updating card '#{card.name}' (ID/#{card.id})".colorize(:light_yellow)
       updated = api_cards.update(card)

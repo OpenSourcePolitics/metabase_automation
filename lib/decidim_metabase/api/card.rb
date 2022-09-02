@@ -6,9 +6,7 @@ module DecidimMetabase
     class Card < Api
       def cards
         request = @http_request.get("/api/card")
-        body = JSON.parse(request.body)
-
-        @cards = body
+        @cards = JSON.parse(request.body)
       end
 
       def create(card)
