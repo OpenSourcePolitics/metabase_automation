@@ -15,8 +15,7 @@ main = DecidimMetabase::Main.new(true)
 ## Interesting things below...
 begin
   TOKEN_DB_PATH = "token.private"
-  # Load file 'config.yml'
-  main.configs = YAML.load_file("config.yml")
+  main.load_configs!
   # Define new Faraday connexion
   Faraday.default_adapter = :net_http
   main.connexion!
