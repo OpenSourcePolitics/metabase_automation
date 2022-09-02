@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 module DecidimMetabase
+  # ConfigNotFound : Exception - Raised when required file 'config.yml' is not found
+  class ConfigNotFound < StandardError
+    def initialize(msg = "File 'config.yml' not found. Ensure you copied 'config.yml.example' file.")
+      super
+    end
+  end
+
   # Config - Contains global configuration from 'config.yml'
   class Config
     attr_reader :databases, :collection_name, :language, :host
