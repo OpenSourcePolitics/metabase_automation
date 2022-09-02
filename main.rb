@@ -20,11 +20,8 @@ begin
   main.api_session!
   main.http_request!
   main.api_database!
-
-  # Interpret local queries from decidim cards
-  main.query_interpreter = DecidimMetabase::QueryInterpreter
-
   main.load_databases!
+
   main.databases = main.databases.map do |hash|
     hash["db_name"] = DecidimMetabase::Object::Database.new(main.api_database.find_by(hash["db_name"]))
   end
@@ -57,7 +54,7 @@ begin
   CARDS = filesystem_collection.cards + metabase_collection.cards
 
   filesystem_collection.cards.each_with_index do |card, _|
-    card.query = main.query_interpreter.interpreter!(main.configs, card, CARDS)
+    card.query = DecidimMetabase::QueryInterpreter.interpreter!(main.configs, card, CARDS)
 
     online_card = metabase_collection.find_card(card.name)
     card.update_id!(online_card.id) if online_card&.id

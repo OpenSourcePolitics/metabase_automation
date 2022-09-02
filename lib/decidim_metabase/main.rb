@@ -12,7 +12,7 @@ module DecidimMetabase
 
   # Main - Main structure to work with Metabase
   class Main
-    attr_accessor :configs, :query_interpreter, :databases
+    attr_accessor :configs, :databases
     attr_reader :db_registry
 
     def initialize(welcome)
