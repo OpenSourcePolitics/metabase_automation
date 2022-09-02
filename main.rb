@@ -10,14 +10,12 @@ require "yaml"
 require "colorize"
 require "byebug"
 
+Faraday.default_adapter = :net_http
 main = DecidimMetabase::Main.new(true)
 
 ## Interesting things below...
 begin
-  TOKEN_DB_PATH = "token.private"
   main.load_configs!
-  # Define new Faraday connexion
-  Faraday.default_adapter = :net_http
   main.connexion!
   main.api_session!
   main.http_request!
