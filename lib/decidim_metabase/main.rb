@@ -28,6 +28,10 @@ module DecidimMetabase
     end
     alias connexion! conn
 
+    def metabase_url
+      @conn.build_url.to_s
+    end
+
     def token_db_path
       "token.private"
     end
