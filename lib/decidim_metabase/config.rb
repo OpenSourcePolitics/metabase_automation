@@ -5,11 +5,26 @@ module DecidimMetabase
   class Config
     attr_reader :databases, :collection_name, :language, :host
 
-    def initialize(hash)
+    def initialize
+      setup!
+    end
+
+    def setup!
+      hash = load_file
+
       @databases = databases_to_ary(hash["database"])
       @collection_name = hash["collection_name"]
       @language = hash["language"]
       @host = hash["host"]
+
+      self
+    end
+
+    # Load main config YAML
+    def load_file
+      raise ConfigNotFound unless File.exist?("config.yml")
+
+      YAML.load_file("config.yml")
     end
 
     # Creates an array of Databases with methods :
