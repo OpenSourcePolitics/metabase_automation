@@ -19,6 +19,7 @@ module DecidimMetabase
 
     before do
       env_vars.each { |hash| stub_const("ENV", ENV.to_hash.merge(hash)) }
+      allow(subject).to receive(:token_db_path).and_return(token_db_path)
     end
 
     describe "#initialize" do
@@ -58,6 +59,33 @@ module DecidimMetabase
 
       it "alias #api_session by #api_session!" do
         expect(subject.method(:api_session)).to eq(subject.method(:api_session!))
+      end
+
+      it "read the stored token" do
+        expect(subject.api_session.token).to eq("fake-token-123456")
+      end
+
+      context "when token file is not present" do
+        before do
+          stub_request(:post, "https://example.metabase.com/api/session").
+            with(
+              body: {
+                "username" => "user123456",
+                "password" => "password123456"
+              }.to_json,
+              headers: {
+                'Accept'=>'*/*',
+                'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+                'Content-Type'=>'application/json',
+              }).
+            to_return(status: 200, body: { "id" => "fake-id-123456" }.to_json, headers: {})
+          allow(File).to receive(:exist?).with(token_db_path).and_return(false)
+          allow(File).to receive(:open).and_call_original
+        end
+
+        it "fetch new token" do
+          expect(subject.api_session.token).to eq("fake-id-123456")
+        end
       end
     end
 

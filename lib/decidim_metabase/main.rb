@@ -26,11 +26,15 @@ module DecidimMetabase
     end
     alias connexion! conn
 
+    def token_db_path
+      "token.private"
+    end
+
     def api_session
       @api_session ||= DecidimMetabase::Api::Session.new(conn, {
                                                            username: DecidimMetabase.env("METABASE_USERNAME"),
                                                            password: DecidimMetabase.env("METABASE_PASSWORD")
-                                                         })
+                                                         }, token_db_path)
     end
     alias api_session! api_session
 
