@@ -3,12 +3,14 @@
 require_relative "object/database"
 
 module DecidimMetabase
+  # ConfigNotFound : Exception - Raised when required file 'config.yml' is not found
   class ConfigNotFound < StandardError
     def initialize(msg = "File 'config.yml' not found. Ensure you copied 'config.yml.example' file.")
       super
     end
   end
 
+  # Main - Main structure to work with Metabase
   class Main
     attr_accessor :configs, :query_interpreter, :databases
     attr_reader :db_registry

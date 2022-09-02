@@ -67,18 +67,19 @@ module DecidimMetabase
 
       context "when token file is not present" do
         before do
-          stub_request(:post, "https://example.metabase.com/api/session").
-            with(
+          stub_request(:post, "https://example.metabase.com/api/session")
+            .with(
               body: {
                 "username" => "user123456",
                 "password" => "password123456"
               }.to_json,
               headers: {
-                'Accept'=>'*/*',
-                'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                'Content-Type'=>'application/json',
-              }).
-            to_return(status: 200, body: { "id" => "fake-id-123456" }.to_json, headers: {})
+                "Accept" => "*/*",
+                "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+                "Content-Type" => "application/json"
+              }
+            )
+            .to_return(status: 200, body: { "id" => "fake-id-123456" }.to_json, headers: {})
           allow(File).to receive(:exist?).with(token_db_path).and_return(false)
           allow(File).to receive(:open).and_call_original
         end

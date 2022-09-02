@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DecidimMetabase
+  # Utils - Contains not required logic like outputs
   module Utils
     def self.welcome
       render_ascii_art
