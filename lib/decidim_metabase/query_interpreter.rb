@@ -27,7 +27,7 @@ module DecidimMetabase
     def self.interpret_language_code(query, language_code)
       return query unless interpret_language_code?(query)
 
-      query.gsub!("$LANGUAGE_CODE", "#{language_code}")
+      query.gsub!("$LANGUAGE_CODE", language_code.to_s)
     end
 
     def self.interpret_language_code?(query)

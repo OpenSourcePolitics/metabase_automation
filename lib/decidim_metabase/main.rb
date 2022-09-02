@@ -8,6 +8,7 @@ module DecidimMetabase
       super
     end
   end
+
   class Main
     attr_accessor :configs, :query_interpreter, :databases
     attr_reader :db_registry
@@ -66,9 +67,10 @@ module DecidimMetabase
     def find_db_for(card)
       db_registry.select { |hash| hash["cards"] == card.cards_name }.first["db_name"]
     end
+
     # Load main config YAML
     def load_configs!
-      raise ConfigNotFound unless File.exist?('config.yml')
+      raise ConfigNotFound unless File.exist?("config.yml")
 
       @configs = YAML.load_file("config.yml")
     end

@@ -68,7 +68,7 @@ begin
     card.build_payload!(metabase_collection, main.find_db_for(card).id, CARDS)
 
     if card.exist && card.need_update
-      puts "Updating card '#{card.name}' (ID/#{card.id}) with URL : #{conn.build_url.to_s}question/#{card.id}".colorize(:light_yellow)
+      puts "Updating card '#{card.name}' (ID/#{card.id}) with URL : #{conn.build_url}question/#{card.id}".colorize(:light_yellow)
       updated = api_cards.update(card)
       puts "Card successfully updated (ID/#{updated["id"]})".colorize(:light_green)
       card.update_id!(updated["id"]) if card.id != updated["id"]
