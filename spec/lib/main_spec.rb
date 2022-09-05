@@ -4,6 +4,7 @@ module DecidimMetabase
   RSpec.describe Main do
     let(:subject) { described_class.new(message) }
     let(:message) { false }
+    let(:configs) { Config.new(configs_yml) }
     let(:metabase_host) { "example.metabase.com" }
     let(:metabase_username) { "user123456" }
     let(:metabase_pwd) { "password123456" }
@@ -39,7 +40,7 @@ module DecidimMetabase
       end
 
       it "alias #conn by #connexion!" do
-        expect(subject.method(:conn)).to eq(subject.method(:connexion!))
+        expect(subject.method(:conn)).to eq(subject.method(:define_connexion!))
       end
     end
 
@@ -49,7 +50,7 @@ module DecidimMetabase
       end
 
       it "alias #api_session by #api_session!" do
-        expect(subject.method(:api_session)).to eq(subject.method(:api_session!))
+        expect(subject.method(:api_session)).to eq(subject.method(:define_api_session!))
       end
 
       it "read the stored token" do
@@ -87,7 +88,7 @@ module DecidimMetabase
       end
 
       it "alias #http_request by #http_request!" do
-        expect(subject.method(:http_request)).to eq(subject.method(:http_request!))
+        expect(subject.method(:http_request)).to eq(subject.method(:define_http_request!))
       end
     end
 
@@ -97,39 +98,7 @@ module DecidimMetabase
       end
 
       it "alias #api_database by #api_database!" do
-        expect(subject.method(:api_database)).to eq(subject.method(:api_database!))
-      end
-    end
-
-    describe "#load_databases!" do
-      it "returns an array of Hash" do
-        sub = subject
-        sub.configs = configs_yml
-        sub.load_databases!
-
-        expect(sub.db_registry).to eq([
-                                        { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
-                                        { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
-                                      ])
-        expect(sub.databases).to eq([
-                                      { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
-                                      { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
-                                    ])
-      end
-    end
-
-    describe "#find_db_for" do
-      let(:sub) do
-        sub = subject
-        sub.configs = configs_yml
-        sub.load_databases!
-        sub
-      end
-
-      let(:card) { DecidimMetabase::Object::FileSystemCard.new("./spec/fixtures/cards/decidim_cards/organizations") }
-
-      it "returns the database related to card type" do
-        expect(sub.find_db_for(card)).to eq("Decidim Cards Database")
+        expect(subject.method(:api_database)).to eq(subject.method(:define_api_database!))
       end
     end
   end
