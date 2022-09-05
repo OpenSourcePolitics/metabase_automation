@@ -19,7 +19,7 @@ module DecidimMetabase
         headers: { "Content-Type" => "application/json" }
       )
     end
-    alias connexion! conn
+    alias set_connexion! conn
 
     def metabase_url
       @conn.build_url.to_s
@@ -35,27 +35,29 @@ module DecidimMetabase
                                                            password: DecidimMetabase.env("METABASE_PASSWORD")
                                                          }, token_db_path)
     end
-    alias api_session! api_session
+    alias set_api_session! api_session
 
     # HTTP Request builder
     def http_request
       @http_request ||= DecidimMetabase::HttpRequests.new(api_session)
     end
-    alias http_request! http_request
+    alias set_http_request! http_request
 
     # Metabase database API
     def api_database
       @api_database ||= DecidimMetabase::Api::Database.new(http_request)
     end
-    alias api_database! api_database
+    alias set_api_database! api_database
 
-    def load_databases!
-      databases = configs["database"].map do |key, value|
-        { "cards" => key, "db_name" => value["name"] }
+    # Store databases fetched from Metabase as Array of DecidimMetabase::Object::Database
+    # Prints ID of the database found on STDOUT
+    def set_databases!
+      @databases = configs.databases.map do |db|
+        database = DecidimMetabase::Object::Database.new api_database.find_by(db.name)
+        puts "Database '#{database.name}' found (ID/#{database.id})".colorize(:light_green)
+
+        database
       end
-
-      @db_registry = databases
-      @databases = databases
     end
 
     def load_all_fs_cards(collection, metabase_collection)

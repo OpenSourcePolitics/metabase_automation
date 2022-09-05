@@ -43,6 +43,7 @@ module DecidimMetabase
     def databases_to_ary(hash)
       hash.map do |key, value|
         Class.new do
+          attr_accessor :metabase_db
           attr_reader :type, :name
 
           def initialize(type, name)
