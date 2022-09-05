@@ -9,25 +9,20 @@ require "dotenv/load"
 require "yaml"
 require "colorize"
 require "byebug"
+require "benchmark"
 
 Faraday.default_adapter = :net_http
 main = DecidimMetabase::Main.new(true)
 
 ## Interesting things below...
 begin
-  main.load_configs!
-  main.connexion!
-  main.api_session!
-  main.http_request!
-  main.api_database!
-  main.load_databases!
-
-  main.databases = main.databases.map do |hash|
-    hash["db_name"] = DecidimMetabase::Object::Database.new(main.api_database.find_by(hash["db_name"]))
-  end
-
-  main.databases.each do |db|
-    puts "Database '#{db.name}' found (ID/#{db.id})".colorize(:light_green)
+  main.tap do |obj|
+    obj.configs = DecidimMetabase::Config.new
+    obj.set_connexion!
+    obj.set_api_session!
+    obj.set_http_request!
+    obj.set_api_database!
+    obj.set_databases!
   end
 
   metabase_collection_response = DecidimMetabase::Api::Collection.new(main.http_request)
