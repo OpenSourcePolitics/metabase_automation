@@ -69,7 +69,7 @@ RSpec.describe DecidimMetabase::Api::Database do
     it "doesn't initializes" do
       expect do
         subject
-      end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing database.")
+      end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests as HTTP requester.")
     end
   end
 
