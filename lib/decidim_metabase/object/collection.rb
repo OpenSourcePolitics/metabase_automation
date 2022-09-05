@@ -7,7 +7,6 @@ module DecidimMetabase
       attr_accessor :authority_level, :description, :archived, :slug, :color, :can_write, :name, :personal_owner_id,
                     :id, :location, :namespace, :cards
 
-      # rubocop:disable Metrics/MethodLength
       def initialize(hash)
         @authority_level = hash["authority_level"]
         @description = hash["description"]
@@ -20,8 +19,8 @@ module DecidimMetabase
         @id = hash["id"]
         @location = hash["location"]
         @namespace = hash["namespace"]
+        @cards = []
       end
-      # rubocop:enable Metrics/MethodLength
 
       def find_card(name)
         @cards.select { |card| card&.name == name }.compact&.first
@@ -46,12 +45,13 @@ module DecidimMetabase
           next unless File.directory?(path)
 
           card = DecidimMetabase::Object::FileSystemCard.new(path, locale)
+          next if card.name.nil? || card.name.empty?
+
           card.collection_id = metabase_collection.id
           card.card_exists?(metabase_collection)
           card
         end.compact
 
-        @cards ||= []
         @cards += cards
         sort_cards_by_dependencies!
       end

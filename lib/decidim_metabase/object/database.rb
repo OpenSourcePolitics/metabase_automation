@@ -4,12 +4,13 @@ module DecidimMetabase
   module Object
     # Metabase collection
     class Database
-      attr_accessor :id, :name, :description
+      attr_accessor :id, :name, :description, :type
 
-      def initialize(hash)
+      def initialize(hash, type)
         @id = hash["id"]
         @name = hash["name"]
         @description = hash["description"]
+        @type = type
       end
     end
   end

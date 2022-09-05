@@ -92,7 +92,6 @@ module DecidimMetabase
         }
       end
 
-      # rubocop:disable Metrics/MethodLength
       def base_payload(collection, decidim_db_id)
         {
           collection_id: collection.id,
@@ -112,7 +111,6 @@ module DecidimMetabase
           }
         }
       end
-      # rubocop:enable Metrics/MethodLength
 
       private
 

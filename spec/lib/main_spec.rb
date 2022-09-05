@@ -4,6 +4,7 @@ module DecidimMetabase
   RSpec.describe Main do
     let(:subject) { described_class.new(message) }
     let(:message) { false }
+    let(:configs) { Config.new(configs_yml) }
     let(:metabase_host) { "example.metabase.com" }
     let(:metabase_username) { "user123456" }
     let(:metabase_pwd) { "password123456" }
@@ -38,8 +39,21 @@ module DecidimMetabase
         expect(conn.headers["Content-Type"]).to eq("application/json")
       end
 
-      it "alias #conn by #connexion!" do
-        expect(subject.method(:conn)).to eq(subject.method(:connexion!))
+      it "alias #conn by #define_connexion!" do
+        expect(subject.method(:conn)).to eq(subject.method(:define_connexion!))
+      end
+    end
+
+    describe "#metabase_url" do
+      it "returns the metabase_url" do
+        subject.define_connexion!
+        expect(subject.metabase_url).to eq("https://example.metabase.com/")
+      end
+
+      context "when there is no connexion defined" do
+        it "returns empty" do
+          expect(subject.metabase_url).to eq("")
+        end
       end
     end
 
@@ -48,8 +62,8 @@ module DecidimMetabase
         expect(subject.api_session).to be_a DecidimMetabase::Api::Session
       end
 
-      it "alias #api_session by #api_session!" do
-        expect(subject.method(:api_session)).to eq(subject.method(:api_session!))
+      it "alias #api_session by #define_api_session!" do
+        expect(subject.method(:api_session)).to eq(subject.method(:define_api_session!))
       end
 
       it "read the stored token" do
@@ -86,50 +100,18 @@ module DecidimMetabase
         expect(subject.http_request).to be_a(DecidimMetabase::HttpRequests)
       end
 
-      it "alias #http_request by #http_request!" do
-        expect(subject.method(:http_request)).to eq(subject.method(:http_request!))
+      it "alias #http_request by #define_http_request!" do
+        expect(subject.method(:http_request)).to eq(subject.method(:define_http_request!))
       end
     end
 
     describe "#api_database" do
-      it "defines a new http requests" do
+      it "defines a new Api::Database" do
         expect(subject.api_database).to be_a(DecidimMetabase::Api::Database)
       end
 
-      it "alias #api_database by #api_database!" do
-        expect(subject.method(:api_database)).to eq(subject.method(:api_database!))
-      end
-    end
-
-    describe "#load_databases!" do
-      it "returns an array of Hash" do
-        sub = subject
-        sub.configs = configs_yml
-        sub.load_databases!
-
-        expect(sub.db_registry).to eq([
-                                        { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
-                                        { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
-                                      ])
-        expect(sub.databases).to eq([
-                                      { "cards" => "decidim_cards", "db_name" => "Decidim Cards Database" },
-                                      { "cards" => "matomo_cards", "db_name" => "Matomo Cards Database" }
-                                    ])
-      end
-    end
-
-    describe "#find_db_for" do
-      let(:sub) do
-        sub = subject
-        sub.configs = configs_yml
-        sub.load_databases!
-        sub
-      end
-
-      let(:card) { DecidimMetabase::Object::FileSystemCard.new("./spec/fixtures/cards/decidim_cards/organizations") }
-
-      it "returns the database related to card type" do
-        expect(sub.find_db_for(card)).to eq("Decidim Cards Database")
+      it "alias #api_database by #define_api_database!" do
+        expect(subject.method(:api_database)).to eq(subject.method(:define_api_database!))
       end
     end
   end

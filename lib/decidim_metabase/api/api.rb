@@ -14,7 +14,7 @@ module DecidimMetabase
     class Api
       def initialize(http_request)
         unless http_request.is_a?(DecidimMetabase::HttpRequests)
-          raise ::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing Collection."
+          raise ::ArgumentError, "Please use DecidimMetabase::HttpRequests as HTTP requester."
         end
 
         @http_request = http_request
