@@ -3,13 +3,6 @@
 require_relative "object/database"
 
 module DecidimMetabase
-  # ConfigNotFound : Exception - Raised when required file 'config.yml' is not found
-  class ConfigNotFound < StandardError
-    def initialize(msg = "File 'config.yml' not found. Ensure you copied 'config.yml.example' file.")
-      super
-    end
-  end
-
   # Main - Main structure to work with Metabase
   class Main
     attr_accessor :configs, :databases
@@ -76,13 +69,6 @@ module DecidimMetabase
 
     def find_db_for(card)
       db_registry.select { |hash| hash["cards"] == card.cards_name }.first["db_name"]
-    end
-
-    # Load main config YAML
-    def load_configs!
-      raise ConfigNotFound unless File.exist?("config.yml")
-
-      @configs = YAML.load_file("config.yml")
     end
   end
 end

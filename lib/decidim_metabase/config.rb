@@ -12,7 +12,8 @@ module DecidimMetabase
   class Config
     attr_reader :databases, :collection_name, :language, :host
 
-    def initialize
+    def initialize(config_file = "config.yml")
+      @config_file = config_file
       setup!
     end
 
@@ -27,11 +28,13 @@ module DecidimMetabase
       self
     end
 
+    private
+
     # Load main config YAML
     def load_file
-      raise ConfigNotFound unless File.exist?("config.yml")
+      raise ConfigNotFound unless File.exist? @config_file
 
-      YAML.load_file("config.yml")
+      YAML.load_file @config_file
     end
 
     # Creates an array of Databases with methods :
