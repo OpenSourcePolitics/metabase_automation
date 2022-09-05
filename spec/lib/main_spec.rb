@@ -39,17 +39,29 @@ module DecidimMetabase
         expect(conn.headers["Content-Type"]).to eq("application/json")
       end
 
-      it "alias #conn by #connexion!" do
+      it "alias #conn by #define_connexion!" do
         expect(subject.method(:conn)).to eq(subject.method(:define_connexion!))
       end
     end
 
+    describe "#metabase_url" do
+      it "returns the metabase_url" do
+        subject.define_connexion!
+        expect(subject.metabase_url).to eq("https://example.metabase.com/")
+      end
+
+      context "when there is no connexion defined" do
+        it "returns empty" do
+          expect(subject.metabase_url).to eq("")
+        end
+      end
+    end
     describe "#api_session" do
       it "creates a new api session" do
         expect(subject.api_session).to be_a DecidimMetabase::Api::Session
       end
 
-      it "alias #api_session by #api_session!" do
+      it "alias #api_session by #define_api_session!" do
         expect(subject.method(:api_session)).to eq(subject.method(:define_api_session!))
       end
 
@@ -87,7 +99,7 @@ module DecidimMetabase
         expect(subject.http_request).to be_a(DecidimMetabase::HttpRequests)
       end
 
-      it "alias #http_request by #http_request!" do
+      it "alias #http_request by #define_http_request!" do
         expect(subject.method(:http_request)).to eq(subject.method(:define_http_request!))
       end
     end
@@ -97,7 +109,7 @@ module DecidimMetabase
         expect(subject.api_database).to be_a(DecidimMetabase::Api::Database)
       end
 
-      it "alias #api_database by #api_database!" do
+      it "alias #api_database by #define_api_database!" do
         expect(subject.method(:api_database)).to eq(subject.method(:define_api_database!))
       end
     end

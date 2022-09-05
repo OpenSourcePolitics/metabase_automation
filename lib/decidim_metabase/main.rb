@@ -4,6 +4,7 @@ require_relative "object/database"
 
 module DecidimMetabase
   # Main - Main structure to work with Metabase
+  # Define connexion, session, http requests, databases, cards actions
   class Main
     attr_accessor :configs, :databases, :metabase_collection, :metabase_cards, :metabase_api_collection,
                   :filesystem_collection, :api_cards
@@ -23,7 +24,7 @@ module DecidimMetabase
     alias define_connexion! conn
 
     def metabase_url
-      @conn.build_url.to_s
+      @conn&.build_url.to_s || ""
     end
 
     def token_db_path
