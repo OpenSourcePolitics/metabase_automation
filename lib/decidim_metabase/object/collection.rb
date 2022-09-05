@@ -20,6 +20,7 @@ module DecidimMetabase
         @id = hash["id"]
         @location = hash["location"]
         @namespace = hash["namespace"]
+        @cards = []
       end
       # rubocop:enable Metrics/MethodLength
 
@@ -46,12 +47,13 @@ module DecidimMetabase
           next unless File.directory?(path)
 
           card = DecidimMetabase::Object::FileSystemCard.new(path, locale)
+          next if card.name.nil? || card.name.empty?
+
           card.collection_id = metabase_collection.id
           card.card_exists?(metabase_collection)
           card
         end.compact
 
-        @cards ||= []
         @cards += cards
         sort_cards_by_dependencies!
       end
