@@ -56,6 +56,7 @@ module DecidimMetabase
         end
       end
     end
+
     describe "#api_session" do
       it "creates a new api session" do
         expect(subject.api_session).to be_a DecidimMetabase::Api::Session
@@ -105,7 +106,7 @@ module DecidimMetabase
     end
 
     describe "#api_database" do
-      it "defines a new http requests" do
+      it "defines a new Api::Database" do
         expect(subject.api_database).to be_a(DecidimMetabase::Api::Database)
       end
 

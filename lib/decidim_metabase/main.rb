@@ -23,14 +23,6 @@ module DecidimMetabase
     end
     alias define_connexion! conn
 
-    def metabase_url
-      @conn&.build_url.to_s || ""
-    end
-
-    def token_db_path
-      "token.private"
-    end
-
     def api_session
       @api_session ||= DecidimMetabase::Api::Session.new(conn, {
                                                            username: DecidimMetabase.env("METABASE_USERNAME"),
@@ -62,6 +54,25 @@ module DecidimMetabase
       end
     end
 
+    # Fetch the Metabase database for the given card
+    def find_db_for(card)
+      @databases.select { |db| db.type == card.cards_name }.first
+    end
+
+
+    # Returns the metabase URL
+    def metabase_url
+      @conn&.build_url.to_s || ""
+    end
+
+    # File name where token will be stored on the disk
+    def token_db_path
+      "token.private"
+    end
+
+    # Read folders './cards/*' and for each folder, load the YAML cards.
+    # For each folder in './cards/*' it saves the cards in @filesystem_collection.cards
+    # @metabase_collection must be defined in order to link the filesystem card with existing cards
     def load_all_fs_cards!
       Dir.glob(DecidimMetabase.cards_path).each do |path|
         next unless File.directory? path
@@ -71,10 +82,8 @@ module DecidimMetabase
       end
     end
 
-    def find_db_for(card)
-      @databases.select { |db| db.type == card.cards_name }.first
-    end
-
+    # This method creates the required collections and load all local cards
+    # It registers the cards present in Metabase in the metabase_collection.cards
     def set_collections!
       prepare_metabase_collection!
       set_metabase_cards!
@@ -88,15 +97,18 @@ module DecidimMetabase
       @metabase_collection.define_resource(@filesystem_collection)
     end
 
+    # Define @metabase_api_collection from the collection fetched from Metabase
     def prepare_metabase_collection!
       @metabase_api_collection = DecidimMetabase::Api::Collection.new(@http_request)
                                                                  .find_or_create!(@configs.collection_name)
     end
 
+    # Define @metabase_cards from the cards fetched from Metabase
     def set_metabase_cards!
       @metabase_cards = DecidimMetabase::Api::Card.new(@http_request)
     end
 
+    # Define @filesystem_collection from the collection fetched from Metabase
     def set_filesystem_collection!
       @filesystem_collection = DecidimMetabase::Object::Collection.new(@metabase_api_collection)
     end
