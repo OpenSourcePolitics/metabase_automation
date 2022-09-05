@@ -8,8 +8,6 @@ require "faraday/net_http"
 require "dotenv/load"
 require "yaml"
 require "colorize"
-require "byebug"
-require "benchmark"
 
 Faraday.default_adapter = :net_http
 main = DecidimMetabase::Main.new(true)
