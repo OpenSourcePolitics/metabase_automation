@@ -5,7 +5,8 @@ require_relative "object/database"
 module DecidimMetabase
   # Main - Main structure to work with Metabase
   class Main
-    attr_accessor :configs, :databases, :metabase_collection, :metabase_cards, :metabase_api_collection, :filesystem_collection, :api_cards
+    attr_accessor :configs, :databases, :metabase_collection, :metabase_cards, :metabase_api_collection,
+                  :filesystem_collection, :api_cards
     attr_reader :db_registry
 
     def initialize(welcome)
@@ -87,7 +88,8 @@ module DecidimMetabase
     end
 
     def prepare_metabase_collection!
-      @metabase_api_collection = DecidimMetabase::Api::Collection.new(@http_request).find_or_create!(@configs.collection_name)
+      @metabase_api_collection = DecidimMetabase::Api::Collection.new(@http_request)
+                                                                 .find_or_create!(@configs.collection_name)
     end
 
     def set_metabase_cards!
@@ -124,7 +126,7 @@ module DecidimMetabase
 
         if card.exist && card.need_update
           puts "Updating card '#{card.name}' (#{db.type} - ID/#{card.id}) with URL : #{metabase_url}question/#{card.id}"
-                 .colorize(:light_yellow)
+            .colorize(:light_yellow)
           updated = @api_cards.update(card)
           puts "Card successfully updated (#{db.type} - ID/#{updated["id"]})".colorize(:light_green)
           card.update_id!(updated["id"]) if card.id != updated["id"]
@@ -137,7 +139,6 @@ module DecidimMetabase
           puts "Card '#{card.name}' already up-to-date (#{db.type} - ID/#{card.id})".colorize(:green)
         end
       end
-
     end
   end
 end

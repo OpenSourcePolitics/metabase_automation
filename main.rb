@@ -27,14 +27,13 @@ begin
     obj.set_collections!
   end
 
-
-
   puts "Cards prepared to be saved in Metabase '#{main.filesystem_collection.cards.map(&:name).join(", ")}'"
     .colorize(:yellow)
 
-
-  puts "Creating new cards #{main.filesystem_collection.cards.map(&:name) - main.metabase_collection.cards.map(&:name)}"
-      .colorize(:light_green) if main.create_new_cards?
+  if main.create_new_cards?
+    puts "Creating new cards #{main.filesystem_collection.cards.map(&:name) - main.metabase_collection.cards.map(&:name)}"
+      .colorize(:light_green)
+  end
 
   main.store_and_update_cards!
 
