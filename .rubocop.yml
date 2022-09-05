@@ -24,18 +24,19 @@ Layout/LineLength:
   Enabled: true
   Exclude:
     - spec/api/collection_spec.rb
-  Max: 120
+  Max: 130
 
 Metrics/AbcSize:
-  Enabled: true
-  Exclude:
-    - lib/decidim_metabase/api/session.rb
+  Enabled: false
 
 
 Metrics/ModuleLength:
   Enabled: true
   Exclude:
     - spec/**/*_spec.rb
+
+Metrics/MethodLength:
+  Enabled: false
 
 Metrics/BlockLength:
   Enabled: true

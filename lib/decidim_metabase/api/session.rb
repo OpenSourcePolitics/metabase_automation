@@ -34,7 +34,6 @@ module DecidimMetabase
         fetch_token!
       end
 
-      # rubocop:disable Metrics/MethodLength
       def fetch_token!
         token = already_existing_token
         return token unless token.nil? || token == ""
@@ -54,7 +53,6 @@ module DecidimMetabase
 
         @token = token
       end
-      # rubocop:enable Metrics/MethodLength
 
       def session_request_header
         { "X-Metabase-Session" => @token }

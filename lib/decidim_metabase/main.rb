@@ -112,6 +112,28 @@ module DecidimMetabase
       @all_cards ||= @filesystem_collection.cards + @metabase_collection.cards
     end
 
+    def action_for(card, db)
+      case card.switch_actions
+      when :update
+        puts "Updating card '#{card.name}' (#{db.type} - ID/#{card.id}) with URL : #{metabase_url}question/#{card.id}"
+          .colorize(:light_yellow)
+        updated = @api_cards.update(card)
+        puts "Card successfully updated (#{db.type} - ID/#{updated["id"]})".colorize(:light_green)
+
+        card.update_id!(updated["id"]) if card.id != updated["id"]
+      when :create
+        puts "Creating card '#{card.name}'".colorize(:light_green)
+        created = @api_cards.create(card)
+        puts "Card successfully created (#{db.type} - ID/#{created["id"]})".colorize(:light_green)
+
+        card.update_id!(created["id"]) if card.id != created["id"]
+      when :up_to_date
+        puts "Card '#{card.name}' already up-to-date (#{db.type} - ID/#{card.id})".colorize(:green)
+      else
+        puts "Unexpected action for card '#{card.name}' - Directory #{db.type}"
+      end
+    end
+
     def store_and_update_cards!
       @filesystem_collection.cards.each do |card|
         card.query = DecidimMetabase::QueryInterpreter.interpreter!(@configs, card, all_cards)
@@ -123,21 +145,7 @@ module DecidimMetabase
         next if db.nil?
 
         card.build_payload!(@metabase_collection, db.id, all_cards)
-
-        if card.exist && card.need_update
-          puts "Updating card '#{card.name}' (#{db.type} - ID/#{card.id}) with URL : #{metabase_url}question/#{card.id}"
-            .colorize(:light_yellow)
-          updated = @api_cards.update(card)
-          puts "Card successfully updated (#{db.type} - ID/#{updated["id"]})".colorize(:light_green)
-          card.update_id!(updated["id"]) if card.id != updated["id"]
-        elsif !card.exist
-          puts "Creating card '#{card.name}'".colorize(:light_green)
-          created = @api_cards.create(card)
-          puts "Card successfully created (#{db.type} - ID/#{created["id"]})".colorize(:light_green)
-          card.update_id!(created["id"]) if card.id != created["id"]
-        else
-          puts "Card '#{card.name}' already up-to-date (#{db.type} - ID/#{card.id})".colorize(:green)
-        end
+        action_for(card, db)
       end
     end
   end

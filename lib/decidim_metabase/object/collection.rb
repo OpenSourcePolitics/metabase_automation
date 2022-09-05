@@ -7,7 +7,6 @@ module DecidimMetabase
       attr_accessor :authority_level, :description, :archived, :slug, :color, :can_write, :name, :personal_owner_id,
                     :id, :location, :namespace, :cards
 
-      # rubocop:disable Metrics/MethodLength
       def initialize(hash)
         @authority_level = hash["authority_level"]
         @description = hash["description"]
@@ -22,7 +21,6 @@ module DecidimMetabase
         @namespace = hash["namespace"]
         @cards = []
       end
-      # rubocop:enable Metrics/MethodLength
 
       def find_card(name)
         @cards.select { |card| card&.name == name }.compact&.first

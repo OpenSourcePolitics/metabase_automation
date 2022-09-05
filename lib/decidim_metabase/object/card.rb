@@ -7,8 +7,6 @@ module DecidimMetabase
       attr_accessor :id, :name, :description, :archived, :collection_position, :table_id, :database_id, :collection_id,
                     :query_type, :creator, :collection, :dataset_query, :need_update, :exist, :resource
 
-      # rubocop:disable Metrics/MethodLength
-      # rubocop:disable Metrics/AbcSize
       def initialize(hash, exist = true)
         @id = hash["id"]
         @name = hash["name"]
@@ -25,8 +23,6 @@ module DecidimMetabase
         @need_update = false
         @exist = exist
       end
-      # rubocop:enable Metrics/MethodLength
-      # rubocop:enable Metrics/AbcSize
 
       def creator_email
         @creator_email ||= @creator["email"]
@@ -39,6 +35,16 @@ module DecidimMetabase
       def card_exists?(collection)
         target = collection.find_card(name)
         @exist = !(target.nil? || target.name.empty?)
+      end
+
+      def switch_actions
+        if @exist && @need_update
+          :update
+        elsif !@exist
+          :create
+        else
+          :up_to_date
+        end
       end
 
       def update_id!(id)
