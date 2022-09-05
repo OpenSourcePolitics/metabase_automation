@@ -59,7 +59,6 @@ module DecidimMetabase
       @databases.select { |db| db.type == card.cards_name }.first
     end
 
-
     # Returns the metabase URL
     def metabase_url
       @conn&.build_url.to_s || ""
