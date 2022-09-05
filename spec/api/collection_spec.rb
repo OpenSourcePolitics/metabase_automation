@@ -64,7 +64,7 @@ module DecidimMetabase
         it "doesn't initializes" do
           expect do
             subject
-          end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing Collection.")
+          end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests as HTTP requester.")
         end
       end
 
