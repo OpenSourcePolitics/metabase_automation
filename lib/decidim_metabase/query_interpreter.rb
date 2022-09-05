@@ -17,7 +17,7 @@ module DecidimMetabase
     def self.interpret_host(query, host)
       return query unless interpret_host?(query)
 
-      query.gsub!("$HOST", "'#{host}'")
+      query.gsub("$HOST", "'#{host}'")
     end
 
     def self.interpret_host?(query)
@@ -27,7 +27,7 @@ module DecidimMetabase
     def self.interpret_language_code(query, language_code)
       return query unless interpret_language_code?(query)
 
-      query.gsub!("$LANGUAGE_CODE", language_code.to_s)
+      query.gsub("$LANGUAGE_CODE", language_code.to_s)
     end
 
     def self.interpret_language_code?(query)
