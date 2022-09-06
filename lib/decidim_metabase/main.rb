@@ -92,6 +92,10 @@ module DecidimMetabase
         obj.cards_from!(@metabase_cards.cards)
       end
 
+      # Metabase cards depends on cards in Metabase.
+      # Better for memory to remove the variable once we store the cards we need
+      remove_instance_variable(:@metabase_cards)
+
       load_all_fs_cards!
       @metabase_collection.define_resource(@filesystem_collection)
     end
