@@ -154,7 +154,16 @@ module DecidimMetabase
         card.update_id!(online_card.id) if online_card&.id
         card.need_update = online_card&.query != card.query
         db = find_db_for(card)
-        next if db.nil?
+        if db.nil?
+          puts "[DatabaseNotFound] - #{card.cards_name} - Database not found for card '#{card.name}'
+Ensure your 'config.yml' contains the key '#{card.cards_name}' for the target database
+Database key '#{card.cards_name}' is not included in : #{@databases.map(&:type) }
+
+Note: Your database key must match exactly the cards folder name under './cards/*'
+".colorize(:yellow)
+
+          next
+        end
 
         card.build_payload!(@metabase_collection, db.id, all_cards)
         action_for(card, db)
