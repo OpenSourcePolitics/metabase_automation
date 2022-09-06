@@ -6,8 +6,14 @@ module DecidimMetabase
   # Main - Main structure to work with Metabase
   # Define connexion, session, http requests, databases, cards actions
   class Main
-    attr_accessor :configs, :databases, :metabase_collection, :metabase_cards, :metabase_api_collection,
-                  :filesystem_collection, :api_cards
+    attr_accessor :configs,
+                  :databases,
+                  :metabase_collection,
+                  :metabase_cards,
+                  :metabase_api_collection,
+                  :filesystem_collection,
+                  :api_cards
+
     attr_reader :db_registry
 
     def initialize(welcome)
@@ -130,8 +136,12 @@ module DecidimMetabase
         puts "Updating card '#{card.name}' (#{db.type} - ID/#{card.id}) with URL : #{metabase_url}question/#{card.id}"
           .colorize(:light_yellow)
         updated = @api_cards.update(card)
-        puts "Card successfully updated (#{db.type} - ID/#{updated["id"]})".colorize(:light_green)
 
+        if updated.include?("errors")
+          puts "[CARD '#{card.name}'] - #{updated["errors"].first}".colorize(:red)
+        else
+          puts "Card successfully updated (#{db.type} - ID/#{updated["id"]})".colorize(:light_green)
+        end
         card.update_id!(updated["id"]) if card.id != updated["id"]
       when :create
         puts "Creating card '#{card.name}'".colorize(:light_green)
@@ -157,7 +167,7 @@ module DecidimMetabase
         if db.nil?
           puts "[DatabaseNotFound] - #{card.cards_name} - Database not found for card '#{card.name}'
 Ensure your 'config.yml' contains the key '#{card.cards_name}' for the target database
-Database key '#{card.cards_name}' is not included in : #{@databases.map(&:type) }
+Database key '#{card.cards_name}' is not included in : #{@databases.map(&:type)}
 
 Note: Your database key must match exactly the cards folder name under './cards/*'
 ".colorize(:yellow)
@@ -165,6 +175,7 @@ Note: Your database key must match exactly the cards folder name under './cards/
           next
         end
 
+        card.meta_columns_payload(online_card&.result_metadata)
         card.build_payload!(@metabase_collection, db.id, all_cards)
         action_for(card, db)
       end

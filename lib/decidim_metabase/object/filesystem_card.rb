@@ -56,14 +56,34 @@ module DecidimMetabase
       end
       # rubocop:enable Lint/DuplicateMethods
 
+      def t_meta_columns
+        @t_meta_columns ||= @yaml_locales.dig("meta", "columns") || {}
+      end
+
+      def meta_columns_payload(result_metadata)
+        return if result_metadata.nil?
+
+        @result_metadata = result_metadata.map do |meta|
+          next unless t_meta_columns.include?(meta["field_ref"][1])
+
+          if meta["display_name"] != t_meta_columns[meta["name"]]
+            meta["display_name"] = t_meta_columns[meta["name"]]
+            @need_update ||= true
+          end
+
+          meta
+        end.compact
+      end
+
       # Payload for Metabase API
       # Can be merged if variables must be interpreted
       def build_payload(collection, decidim_db_id, cards)
         payload = base_payload(collection, decidim_db_id)
+        payload["result_metadata"] = @result_metadata unless @result_metadata.nil? || @result_metadata.empty?
 
         dependencies.each do |dep|
           payload[:dataset_query]["native"]["template-tags"] ||= {}
-          payload[:dataset_query]["native"]["template-tags"].merge!(dependencie_payload(find_card_by(dep, cards)&.id))
+          payload[:dataset_query]["native"]["template-tags"]&.merge!(dependencie_payload(find_card_by(dep, cards)&.id))
         end
 
         @payload = payload
