@@ -85,16 +85,12 @@ module DecidimMetabase
     # It registers the cards present in Metabase in the metabase_collection.cards
     def set_collections!
       prepare_metabase_collection!
-      set_metabase_cards!
+      metabase_cards = fetch_metabase_cards
       set_filesystem_collection!
 
       @metabase_collection = DecidimMetabase::Object::Collection.new(@metabase_api_collection).tap do |obj|
-        obj.cards_from!(@metabase_cards.cards)
+        obj.cards_from!(metabase_cards.cards)
       end
-
-      # Metabase cards depends on cards in Metabase.
-      # Better for memory to remove the variable once we store the cards we need
-      remove_instance_variable(:@metabase_cards)
 
       load_all_fs_cards!
       @metabase_collection.define_resource(@filesystem_collection)
@@ -107,8 +103,8 @@ module DecidimMetabase
     end
 
     # Define @metabase_cards from the cards fetched from Metabase
-    def set_metabase_cards!
-      @metabase_cards = DecidimMetabase::Api::Card.new(@http_request)
+    def fetch_metabase_cards
+      DecidimMetabase::Api::Card.new(@http_request)
     end
 
     # Define @filesystem_collection from the collection fetched from Metabase
