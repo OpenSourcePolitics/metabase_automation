@@ -5,7 +5,7 @@ module DecidimMetabase
     # Metabase card
     class Card
       attr_accessor :id, :name, :description, :archived, :collection_position, :table_id, :database_id, :collection_id,
-                    :query_type, :creator, :collection, :dataset_query, :need_update, :exist, :resource
+                    :query_type, :creator, :collection, :dataset_query, :need_update, :exist, :resource, :result_metadata
 
       def initialize(hash, exist = true)
         @id = hash["id"]
@@ -20,6 +20,7 @@ module DecidimMetabase
         @creator = hash["creator"]
         @collection = DecidimMetabase::Object::Collection.new(hash["collection"])
         @dataset_query = hash["dataset_query"]
+        @result_metadata = hash["result_metadata"]
         @need_update = false
         @exist = exist
       end

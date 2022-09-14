@@ -30,11 +30,9 @@ module DecidimMetabase
       def cards_from(api_cards)
         @cards = api_cards.map do |card|
           next if card["collection"].nil? || card["collection"].empty?
+          next unless card["collection_id"] == @id
 
-          obj = DecidimMetabase::Object::Card.new(card, false)
-          next unless obj&.collection_id == @id
-
-          obj
+          DecidimMetabase::Object::Card.new(card, false)
         end.compact
       end
 
