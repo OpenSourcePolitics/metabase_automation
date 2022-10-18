@@ -63,15 +63,20 @@ module DecidimMetabase
       def meta_columns_payload(result_metadata)
         return if result_metadata.nil?
 
-        @result_metadata = result_metadata.map do |meta|
-          next unless t_meta_columns.include?(meta["field_ref"][1])
+        @result_metadata = result_metadata.map do |column|
+          next unless t_meta_columns.include?(column["field_ref"][1])
 
-          if meta["display_name"] != t_meta_columns[meta["name"]]
-            meta["display_name"] = t_meta_columns[meta["name"]]
+          if column["display_name"] != t_meta_columns[column["name"]]["name"]
+            column["display_name"] = t_meta_columns[column["name"]]["name"]
+            @need_update ||= true
+          end
+          
+          if column["description"] != t_meta_columns[column["name"]]["description"]
+            column["description"] = t_meta_columns[column["name"]]["description"]
             @need_update ||= true
           end
 
-          meta
+          column
         end.compact
       end
 
