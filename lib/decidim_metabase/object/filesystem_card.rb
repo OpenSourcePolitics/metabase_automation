@@ -65,13 +65,14 @@ module DecidimMetabase
 
         @result_metadata = result_metadata.map do |column|
           next unless t_meta_columns.include?(column["field_ref"][1])
+
           column_formatting = t_meta_columns[column["name"]]
 
           if meta["display_name"] != column_formatting["name"]
             meta["display_name"] = column_formatting["name"]
             @need_update ||= true
           end
-          
+
           if meta["description"] != column_formatting["description"]
             meta["description"] = column_formatting["description"]
             @need_update ||= true

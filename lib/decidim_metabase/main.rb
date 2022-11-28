@@ -133,8 +133,10 @@ module DecidimMetabase
     def action_for(card, db)
       case card.switch_actions
       when :update
-        puts "Updating card '#{card.name}' (#{db.type} - ID/#{card.id}) with URL : #{metabase_url}question/#{card.id}"
-          .colorize(:light_yellow)
+        puts %{
+            Updating card '#{card.name}' (#{db.type} - ID/#{card.id}) with URL :
+             #{metabase_url}question/#{card.id}
+        }.colorize(:light_yellow)
         updated = @api_cards.update(card)
 
         if updated.include?("errors")
@@ -146,7 +148,10 @@ module DecidimMetabase
       when :create
         puts "Creating card '#{card.name}'".colorize(:light_green)
         created = @api_cards.create(card)
-        puts "Card successfully created (#{db.type} - ID/#{created["id"]}) with url #{metabase_url}question/#{created["id"]}".colorize(:light_green)
+        puts %{
+            Card successfully created (#{db.type} - ID/#{created["id"]}) with
+            url #{metabase_url}question/#{created["id"]}
+        }.colorize(:light_green)
 
         card.update_id!(created["id"]) if card.id != created["id"]
       when :up_to_date
