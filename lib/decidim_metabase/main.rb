@@ -135,14 +135,13 @@ module DecidimMetabase
       when :update
         puts %{
             Updating card '#{card.name}' (#{db.type} - ID/#{card.id}) with URL :
-             #{metabase_url}question/#{card.id}
-        }.colorize(:light_yellow)
+             #{metabase_url}question/#{card.id}}.colorize(:light_yellow)
         updated = @api_cards.update(card)
 
         if updated.include?("errors")
-          puts "[CARD '#{card.name}'] - #{updated["errors"].first}".colorize(:red)
+          puts %{            [CARD '#{card.name}'] - #{updated["errors"].first}}.colorize(:red)
         else
-          puts "Card successfully updated (#{db.type} - ID/#{updated["id"]})".colorize(:light_green)
+          puts %{           Card successfully updated (#{db.type} - ID/#{updated["id"]})}.colorize(:light_green)
         end
         card.update_id!(updated["id"]) if card.id != updated["id"]
       when :create

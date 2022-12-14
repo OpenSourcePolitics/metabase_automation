@@ -67,9 +67,15 @@ module DecidimMetabase
           next unless t_meta_columns.include?(column["field_ref"][1])
 
           column_formatting = t_meta_columns[column["name"]]
-          column["display_name"] = update_translation!(column["display_name"], column_formatting["name"])
-          column["description"] = update_translation!(column["description"], column_formatting["description"])
+          if meta["display_name"] != column_formatting["name"]
+            meta["display_name"] = column_formatting["name"]
+            @need_update ||= true
+          end
 
+          if meta["description"] != column_formatting["description"]
+            meta["description"] = column_formatting["description"]
+            @need_update ||= true
+          end
           column
         end.compact
       end
