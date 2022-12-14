@@ -139,7 +139,7 @@ module DecidimMetabase
         updated = @api_cards.update(card)
 
         if updated.include?("errors")
-          puts %{            [CARD '#{card.name}'] - #{updated["errors"].first}}.colorize(:red)
+          puts %(            [CARD '#{card.name}'] - #{updated["errors"].first}).colorize(:red)
         else
           puts %{           Card successfully updated (#{db.type} - ID/#{updated["id"]})}.colorize(:light_green)
         end
