@@ -10,7 +10,7 @@
 
 # rspec failure tracking
 .rspec_status
-.env
+.env*
 **/*.private
 config.yml
 .byebug_history
