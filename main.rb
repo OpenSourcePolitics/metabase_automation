@@ -15,7 +15,7 @@ main = DecidimMetabase::Main.new(true)
 ## Interesting things below...
 begin
   main.tap do |obj|
-    obj.configs = DecidimMetabase::Config.new
+    obj.configs = DecidimMetabase::Config.new("#{gets.chomp}.yml")
     obj.define_connexion!
     obj.define_api_session!
     obj.define_http_request!
