@@ -10,7 +10,7 @@ query:
         available_locales,
         created_at,
         updated_at,
-        description->>'fr' as description,
+        description::jsonb->>'fr' as description,
         secondary_hosts,
         available_authorizations,
         header_snippets,
