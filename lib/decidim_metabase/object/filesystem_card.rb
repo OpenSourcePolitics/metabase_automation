@@ -114,6 +114,7 @@ module DecidimMetabase
         {
           collection_id: collection.id,
           name: yaml_locales["name"],
+          description: yaml_locales["description"],
           display: "table",
           dataset: true,
           dataset_query: {
