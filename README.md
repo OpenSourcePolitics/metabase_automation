@@ -1,8 +1,8 @@
-# DecidimMetabase
+# Metabase Automation
 
-Decidim Metabase is a program written in Ruby and helps to create Metabase collections. The aim is to create easily metacards based on [Decidim](https://github.com/decidim/decidim) needs.
+Metabase Automation is a program written in Ruby and helps to create Metabase models. The aim is to create easily models based on [Decidim](https://github.com/decidim/decidim) needs.
 
-Based on the Metabase API, it helps creating Metabase resources based on YAML config files present in `./cards/decidim_cards` and `config.yml`
+Based on the Metabase API, it helps creating Metabase resources based on YAML config files present in `./cards/decidim_cards` and a `config.yml`
 
 ## Installation
 
@@ -44,7 +44,7 @@ ruby main.rb
 
 ## Development
 
-For now Decidim Metabase simplify operations for our Data team. Please note that the code is not efficient and potential fails are present. 
+For now Metabase Automation simplify operations for our Data team. Please note that the code is not efficient and potential fails are present. 
 At the moment, it shouldn't causes specific issues on your Metabase server.
 
 
@@ -58,4 +58,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the DecidimMetabase project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/decidim_metabase/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the Metabase Automation project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/metabase_automation/blob/main/CODE_OF_CONDUCT.md).

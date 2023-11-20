@@ -15,6 +15,7 @@ main = DecidimMetabase::Main.new(true)
 ## Interesting things below...
 begin
   main.tap do |obj|
+    puts "Enter name of YML file without extension containing informations (ex:config-berlin): "
     obj.configs = DecidimMetabase::Config.new("#{gets.chomp}.yml")
     obj.define_connexion!
     obj.define_api_session!
