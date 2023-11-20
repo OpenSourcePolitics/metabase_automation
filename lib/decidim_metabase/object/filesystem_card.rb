@@ -56,14 +56,32 @@ module DecidimMetabase
       end
       # rubocop:enable Lint/DuplicateMethods
 
+      def t_meta_columns
+        @t_meta_columns ||= @yaml_locales.dig("meta", "columns") || {}
+      end
+
+      def meta_columns_payload(result_metadata)
+        return if result_metadata.nil?
+
+        @result_metadata = result_metadata.map do |column|
+          next unless t_meta_columns.include?(column["field_ref"][1])
+
+          column_formatting = t_meta_columns[column["name"]]
+          column["display_name"] = update_translation!(column["display_name"], column_formatting["name"])
+          column["description"] = update_translation!(column["description"], column_formatting["description"])
+          column
+        end.compact
+      end
+
       # Payload for Metabase API
       # Can be merged if variables must be interpreted
       def build_payload(collection, decidim_db_id, cards)
         payload = base_payload(collection, decidim_db_id)
+        payload["result_metadata"] = @result_metadata unless @result_metadata.nil? || @result_metadata.empty?
 
         dependencies.each do |dep|
           payload[:dataset_query]["native"]["template-tags"] ||= {}
-          payload[:dataset_query]["native"]["template-tags"].merge!(dependencie_payload(find_card_by(dep, cards)&.id))
+          payload[:dataset_query]["native"]["template-tags"]&.merge!(dependencie_payload(find_card_by(dep, cards)&.id))
         end
 
         @payload = payload
@@ -92,11 +110,11 @@ module DecidimMetabase
         }
       end
 
-      # rubocop:disable Metrics/MethodLength
       def base_payload(collection, decidim_db_id)
         {
           collection_id: collection.id,
           name: yaml_locales["name"],
+          description: yaml_locales["description"],
           display: "table",
           dataset: true,
           dataset_query: {
@@ -112,7 +130,6 @@ module DecidimMetabase
           }
         }
       end
-      # rubocop:enable Metrics/MethodLength
 
       private
 
@@ -137,6 +154,14 @@ module DecidimMetabase
 
       def info_path
         "#{@path}/info.yml"
+      end
+
+      def update_translation!(column, fs_name)
+        return column if fs_name.nil?
+        return column if column == fs_name
+
+        @need_update ||= true
+        fs_name
       end
     end
   end

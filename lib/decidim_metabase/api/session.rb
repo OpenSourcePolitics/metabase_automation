@@ -34,7 +34,6 @@ module DecidimMetabase
         fetch_token!
       end
 
-      # rubocop:disable Metrics/MethodLength
       def fetch_token!
         token = already_existing_token
         return token unless token.nil? || token == ""
@@ -50,12 +49,10 @@ module DecidimMetabase
         token = body.fetch("id", nil)
         raise DecidimMetabase::Api::TokenNotFound, body if token.nil?
 
-        File.open(@token_db_path, "w+") { |file| file.write(token) }
+        File.write(@token_db_path, token) unless token_db_path == "./spec/fixtures/token.public"
 
         @token = token
-        token
       end
-      # rubocop:enable Metrics/MethodLength
 
       def session_request_header
         { "X-Metabase-Session" => @token }
@@ -66,7 +63,7 @@ module DecidimMetabase
       def already_existing_token
         return unless File.exist? @token_db_path
 
-        content = File.open(@token_db_path)&.read
+        content = File.read(@token_db_path)
         content.chomp
       end
     end

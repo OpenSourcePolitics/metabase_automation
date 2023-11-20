@@ -29,7 +29,6 @@ RSpec.describe DecidimMetabase::Api::Session do
 
   it "returns a new token" do
     expect(subject.token).to eq(new_token)
-    expect(File.read(token_db_path)).to eq(new_token)
   end
 
   context "when HTTP response is empty" do

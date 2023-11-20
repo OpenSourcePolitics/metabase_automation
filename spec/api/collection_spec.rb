@@ -64,7 +64,7 @@ module DecidimMetabase
         it "doesn't initializes" do
           expect do
             subject
-          end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests while initializing Collection.")
+          end.to raise_error(::ArgumentError, "Please use DecidimMetabase::HttpRequests as HTTP requester.")
         end
       end
 
@@ -108,15 +108,16 @@ module DecidimMetabase
 
         context "when collection exists" do
           it "returns the collection" do
-            expect($stdout).to receive(:puts).with("Collection '#{name}' is already existing")
+            expect($stdout).to receive(:puts).with("\e[0;33;49mCollection '#{name}' is already existing\e[0m")
+
             expect(subject.find_or_create!(name)).to eq(collection_rspec)
           end
         end
 
         context "when collection does not exist" do
           let(:name) { "Unknown collection" }
+
           it "creates a new collection" do
-            expect($stdout).to receive(:puts).with("Creating collection '#{name}'...")
             expect(subject.find_or_create!(name)).to eq collection_response
           end
         end

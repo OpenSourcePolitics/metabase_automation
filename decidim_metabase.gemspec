@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dotenv"
   spec.add_dependency "faraday"
   spec.add_dependency "tsort"
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

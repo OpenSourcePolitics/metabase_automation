@@ -13,11 +13,13 @@ require_relative "decidim_metabase/object/collection"
 require_relative "decidim_metabase/object/filesystem_card"
 require_relative "decidim_metabase/object/database"
 require_relative "decidim_metabase/http_requests"
+require_relative "decidim_metabase/config"
 require_relative "decidim_metabase/query_interpreter"
 require_relative "decidim_metabase/topological_sort"
 require_relative "decidim_metabase/utils"
 require_relative "decidim_metabase/main"
 
+# DecidimMetabase allows to create and manage Metabase cards
 module DecidimMetabase
   class Error < StandardError; end
 
