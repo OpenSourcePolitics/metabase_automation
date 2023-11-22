@@ -6,4 +6,5 @@ database:
     name: <EXISTING METABASE DATABASE>
 collection_name: <NEW OR EXISTING METABASE COLLECTION>
 language: fr # en
+group_cards:
 host: <HOST>
