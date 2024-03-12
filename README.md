@@ -27,14 +27,14 @@ git submodule update --recursive
 
 5. Don't forget to setup env variables for Metabase connection:
 ```bash
-export METABASE_HOST="metabase.example.com" && export METABASE_USERNAME="john@doe.com" && export METABASE_PASSWORD="secretpassword"
+export METABASE_HOST='metabase.example.com' && export METABASE_USERNAME='john@doe.com' && export METABASE_PASSWORD='secretpassword'
 # Also possible to put relevant variables in a .env file
 ```
 You also can use a `.env` file containing the relevant informations
 ```bash
-METABASE_HOST=metabase.example.com
-METABASE_USERNAME=john@doe.com
-METABASE_PASSWORD=secretpassword
+METABASE_HOST='metabase.example.com'
+METABASE_USERNAME='john@doe.com'
+METABASE_PASSWORD='secretpassword'
 ```
 and source it
 ```bash
